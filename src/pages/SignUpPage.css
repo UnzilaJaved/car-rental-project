@@ -1,0 +1,61 @@
+/* Background styling */
+.signup-background {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e6f3ff 100%);
+  }
+  
+  /* Card styling */
+  .signup-card {
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+  
+  /* Image styling */
+  .rounded-image {
+    border-radius: 25px;
+    object-fit: cover;
+  }
+  
+  /* Icon styling */
+  .input-icon {
+    color: #3498db;
+  }
+  
+  /* Form field styling */
+  .rounded-input {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    transition: border-color 0.3s;
+  }
+  
+  .rounded-input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);
+  }
+  
+  /* Button styling */
+  .btn-custom {
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 30px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-custom:hover {
+    background-color: #2c6cba;
+  }
+  
+  /* Terms of service link */
+  .form-check-label a {
+    color: #3498db;
+    font-weight: bold;
+  }
+  
+  .form-check-label a:hover {
+    color: #2c6cba;
+    text-decoration: underline;
+  }
+  

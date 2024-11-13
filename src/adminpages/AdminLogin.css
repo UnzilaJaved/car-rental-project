@@ -1,0 +1,68 @@
+/* Container for the login form */
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Full-screen height */
+    background-color: #f4f6f8; /* Light gray background */
+  }
+  
+  .login-form-container {
+    background-color: #fff; /* White background for the form */
+    padding: 2rem; /* Padding inside the form container */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    width: 100%;
+    max-width: 400px; /* Limit max width */
+  }
+  
+  /* Title at the top of the form */
+  .login-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+    text-align: center;
+  }
+  
+  /* Form styling */
+  .login-form .form-group {
+    margin-bottom: 1rem; /* Space between fields */
+  }
+  
+  .login-form .form-control {
+    border-radius: 6px;
+    border: 1px solid #ddd; /* Light gray border */
+    padding: 0.75rem;
+  }
+  
+  /* Button styling */
+  .login-button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #007bff; /* Primary color */
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .login-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  /* Error message styling */
+  .alert-danger {
+    font-size: 0.9rem;
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  

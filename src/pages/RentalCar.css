@@ -1,0 +1,152 @@
+/* RentalCar.css */
+
+.rental-car-page {
+  display: flex;
+  gap: 50px;
+  margin: 60px auto;
+  max-width: 1100px;
+  padding: 30px;
+  background-color: #f4f7fb;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  font-family: 'Poppins', sans-serif;
+}
+
+.car-image-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.car-large-image {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.car-details-section {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.car-details-section h2 {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1d3557;
+  margin-bottom: 15px;
+}
+
+.car-details-section h2::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background-color: #457b9d;
+  margin-top: 8px;
+}
+
+.car-rental-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.car-rental-form label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 8px;
+}
+
+.car-rental-form input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.car-info {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 30px;
+}
+
+.car-info p {
+  font-size: 18px;
+  color: #343a40;
+  margin-bottom: 12px;
+}
+
+.car-info p strong {
+  color: #6c757d;
+}
+
+.car-price {
+  font-size: 34px;
+  font-weight: bold;
+  color: #e63946;
+  margin-top: 20px;
+}
+
+.rent-button {
+  background-color: #457b9d;
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rent-button:hover {
+  background-color: #1d3557;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.rent-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(69, 123, 157, 0.4);
+}
+/* Enhancing the total price display */
+.car-price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e63946;
+  margin-top: 20px;
+}
+
+.car-price p {
+  font-size: 18px;
+  color: #343a40;
+  margin-bottom: 8px;
+}
+
+.rent-button {
+  background-color: #457b9d;
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 20px;
+}
+
+

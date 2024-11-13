@@ -1,0 +1,59 @@
+/* Background styling */
+.login-background {
+    background: linear-gradient(135deg, #e6f3ff 0%, #f9fafc 100%);
+  }
+  
+  /* Card styling */
+  .login-card {
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-left: 140px;
+    width: 85%;
+  }
+  
+  /* Image styling */
+  .login-image {
+    border-radius: 1rem 0 0 1rem;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Icon styling */
+  .logo-icon {
+    color: #3498db;
+  }
+  
+  /* Text styles */
+  .signin-text {
+    font-size: 1.1rem;
+    color: #666666;
+    letter-spacing: 1px;
+  }
+  
+  .account-text {
+    color: #555555;
+  }
+  
+  .link-custom {
+    color: #3498db;
+    font-weight: bold;
+  }
+  
+  .link-custom:hover {
+    color: #2c6cba;
+    text-decoration: none;
+  }
+  
+  /* Button styling */
+  .btn-custom {
+    background-color: #333333;
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-custom:hover {
+    background-color: #555555;
+  }
+  

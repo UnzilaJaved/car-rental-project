@@ -1,0 +1,113 @@
+.rents-page {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-bar {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 250px;
+}
+
+.rents-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.rents-table th, .rents-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.rents-table th {
+    background-color: #f7f7f7;
+    font-weight: 600;
+}
+
+.rents-table td img {
+    width: 50px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.delete-button, .edit-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.edit-button svg, .delete-button svg {
+    color: #007bff;
+    font-size: 1.1em;
+}
+
+.delete-button svg {
+    color: #dc3545;
+}
+
+/* Overlay background for modal */
+.delete-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal content styling */
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 300px;
+    width: 100%;
+}
+
+/* Confirmation buttons */
+.confirm-button, .cancel-button {
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.confirm-button {
+    background-color: #dc3545; /* Red color for delete confirmation */
+    color: white;
+}
+
+.confirm-button:hover {
+    background-color: #c82333;
+}
+
+.cancel-button {
+    background-color: #6c757d; /* Gray color for cancel */
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #5a6268;
+}

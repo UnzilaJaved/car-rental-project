@@ -1,0 +1,78 @@
+/* Custom styles for the Navbar */
+.custom-navbar {
+    background-color: #f0f8ff; /* Light blue background */
+    padding: 15px 20px;
+    border-bottom: 2px solid #e0e0e0;
+  }
+  
+  .navbar-brand-custom {
+    font-size: 24px;
+    font-weight: bold;
+    color: #264653; /* Dark Blue for text */
+    transition: color 0.3s ease;
+  }
+  
+  .navbar-brand-custom:hover {
+    color: #2a9d8f; /* Light Blue on hover */
+  }
+  
+  .nav-link-custom {
+    font-size: 16px;
+    font-weight: 500;
+    color: #264653; /* Dark Blue for text */
+    padding-left: 15px;
+    padding-right: 15px;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-link-custom:hover {
+    color: #2a9d8f; /* Light Blue on hover */
+  }
+  
+  .book-btn {
+    background-color: #2a9d8f; /* Light Blue */
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .book-btn:hover {
+    background-color: #21867a; /* Darker shade of light blue */
+  }
+  
+  .btn-outline-success {
+    border-color: #2a9d8f; /* Light Blue border for Signup */
+    color: #2a9d8f; /* Light Blue text */
+  }
+  
+  .btn-outline-success:hover {
+    background-color: #2a9d8f;
+    color: white;
+  }
+  
+  .btn-outline-primary {
+    border-color: #264653; /* Dark Blue border for Login */
+    color: #264653; /* Dark Blue text */
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #264653;
+    color: white;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .navbar-brand-custom {
+      font-size: 20px;
+    }
+  
+    .nav-link-custom {
+      padding: 10px;
+      text-align: center;
+    }
+  
+    .book-btn {
+      width: 100%;
+    }
+  }
+  
