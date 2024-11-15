@@ -21,7 +21,7 @@ function LoginPage() {
                     <form>
                       <div className="d-flex align-items-center mb-3 pb-1">
                         <i className="fas fa-cubes fa-2x me-3 logo-icon"></i>
-                        <span className="h1 fw-bold mb-0">CarRenta</span>
+                        <span className="h1 fw-bold mb-0">CarRental</span>
                       </div>
 
                       <h5 className="fw-normal mb-3 pb-3 signin-text">

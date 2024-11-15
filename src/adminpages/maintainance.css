@@ -1,0 +1,77 @@
+/* Main container for the maintenance page */
+.maintenances-page {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* Header styling */
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+/* Search bar styling */
+.search-bar {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 250px;
+}
+
+/* Table styling */
+.maintenances-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header row styling */
+.maintenances-table th, .maintenances-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.maintenances-table th {
+    background-color: #f7f7f7;
+    font-weight: 600;
+}
+
+/* Styling for images in the table */
+.maintenances-table td img {
+    width: 50px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Actions column styling - centering the button */
+.maintenances-table td:last-child {
+    text-align: center;
+    padding: 10px;
+}
+
+/* Complete Maintenance button styling */
+.complete-button {
+    padding: 8px 16px;
+    font-size: 0.9em;
+    font-weight: bold;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    background-color: #28a745; /* Success green */
+    color: white;
+    width: 150px; /* Consistent button width */
+   
+    text-align: center;
+}
+
+.complete-button:hover {
+    background-color: #218838; /* Darker green on hover */
+}

@@ -13,6 +13,9 @@ import AdminHome from "./adminpages/adminhome";
 import UserTable from "./adminpages/usertable";
 import CarsAdmin from "./adminpages/carsadmin";
 import RentAdmin from "./adminpages/rent";
+import MaintainanceAdmin from "./adminpages/maintainance";
+import IncidentForm from "./adminpages/IncidentReporting";
+import InsuranceForm from "./adminpages/Insurance";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap is imported
 
 function App() {
@@ -32,6 +35,10 @@ function App() {
         <Route path="/users" element={<UserTable/>} />
         <Route path="/carsadmin" element={<CarsAdmin/>} />
         <Route path="/carsrents" element={<RentAdmin/>} />
+        <Route path="/maintainance" element={<MaintainanceAdmin/>} />
+        <Route path="/incidentreportingform" element={<IncidentForm />} />
+        <Route path="/insuranceform" element={<InsuranceForm />} />
+        
       </Routes>
     </BrowserRouter>
   );
