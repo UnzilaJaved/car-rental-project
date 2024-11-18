@@ -1,7 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import './LoginPage.css'; // Import the CSS file for styling
 import Nav from 'react-bootstrap/Nav';
+import axios from 'axios'; 
+
 function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Handle form submission
+  const handleLogin = async (event) => {
+    event.preventDefault(); // Prevent the default form submission
+
+    try {
+      // Send the form data to the backend API
+      const response = await axios.post('http://backend.test/auth/login', {
+        email,
+        password,
+      }).then((response)=>{
+        console.log("Login:",response);
+      }).catch((error)=>{
+        console.log("error:",error);
+      });
+
+      // Handle the successful login response (e.g., store token, redirect)
+      if (response.data.success) {
+        console.log("Login successful");
+        // Redirect user or perform actions after successful login
+      } else {
+        setErrorMessage("Invalid credentials. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      setErrorMessage("An error occurred. Please try again later.");
+    }
+  };
+
   return (
     <section className="vh-100 login-background">
       <div className="container py-5 h-100">
@@ -18,7 +52,7 @@ function LoginPage() {
                 </div>
                 <div className="col-md-6 col-lg-7 d-flex align-items-center">
                   <div className="card-body p-4 p-lg-5 text-black">
-                    <form>
+                    <form onSubmit={handleLogin}>
                       <div className="d-flex align-items-center mb-3 pb-1">
                         <i className="fas fa-cubes fa-2x me-3 logo-icon"></i>
                         <span className="h1 fw-bold mb-0">CarRental</span>
@@ -34,6 +68,9 @@ function LoginPage() {
                           id="form2Example17"
                           className="form-control form-control-lg"
                           placeholder="Email address"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)} // Update email
+                          required
                         />
                       </div>
 
@@ -43,13 +80,22 @@ function LoginPage() {
                           id="form2Example27"
                           className="form-control form-control-lg"
                           placeholder="Password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)} // Update password
+                          required
                         />
                       </div>
+
+                      {errorMessage && (
+                        <div className="alert alert-danger">
+                          {errorMessage}
+                        </div>
+                      )}
 
                       <div className="pt-1 mb-4">
                         <button
                           className="btn btn-custom btn-lg btn-block"
-                          type="button"
+                          type="submit"
                         >
                           Login
                         </button>
@@ -60,12 +106,12 @@ function LoginPage() {
                       </a>
                       <p className="mb-5 pb-lg-2 account-text">
                         Don't have an account?{" "}
+
                         <Nav.Link href="/bookcars">
-                        <a href="/signup" className="link-custom">
-                          Register here
-                        </a>
+                          <a href="/signup" className="link-custom">
+                            Register here
+                          </a>
                         </Nav.Link>
-                        
                       </p>
                       <a href="#!" className="small text-muted">
                         Terms of use.

@@ -6,9 +6,9 @@ const MaintainanceAdmin = () => {
     const [maintenances, setMaintenances] = useState(() => {
         const savedMaintenances = localStorage.getItem('maintenances');
         return savedMaintenances ? JSON.parse(savedMaintenances) : [
-            { id: 1, photo: 'golf-6.jpg', model: 'Golf-6', type: 'Oil Change', cost: 150, mechanicName: 'Monir', telephone: '0695051534', lastMaintenance: '2023-05-26', nextMaintenance: '2023-06-26', status: 'Available' },
-            { id: 2, photo: 'toyota.jpg', model: 'Toyota', type: 'Brake Repair', cost: 300, mechanicName: 'Ahmed', telephone: '0695051535', lastMaintenance: '2023-06-01', nextMaintenance: '2023-07-01', status: 'Under Maintenance' },
-            { id: 3, photo: 'clio.jpg', model: 'Clio', type: 'Tire Replacement', cost: 400, mechanicName: 'Abdelaziz', telephone: '0695051538', lastMaintenance: '2023-05-26', nextMaintenance: '2023-07-26', status: 'Available' }
+            { id: 1, vehicleId: 'V1001', type: 'Oil Change', cost: 150, maintenance: '2023-06-26', status: 'Available' },
+            { id: 2, vehicleId: 'V1002', type: 'Brake Repair', cost: 300, maintenance: '2023-07-01', status: 'Under Maintenance' },
+            { id: 3, vehicleId: 'V1003', type: 'Tire Replacement', cost: 400, maintenance: '2023-07-26', status: 'Available' }
         ];
     });
 
@@ -39,11 +39,12 @@ const MaintainanceAdmin = () => {
     };
 
     // Filter maintenance records based on search term
-    const filteredMaintenances = maintenances.filter(maintenance =>
-        maintenance.model.toLowerCase().includes(searchTerm) ||
-        maintenance.mechanicName.toLowerCase().includes(searchTerm) ||
-        maintenance.telephone.includes(searchTerm)
-    );
+    const filteredMaintenances = maintenances.filter(maintenance => {
+        const vehicleId = maintenance.vehicleId || '';  // Default to an empty string if undefined
+        const type = maintenance.type || '';            // Default to an empty string if undefined
+
+        return vehicleId.toLowerCase().includes(searchTerm) || type.toLowerCase().includes(searchTerm);
+    });
 
     return (
         <div className="maintenances-page">
@@ -59,14 +60,10 @@ const MaintainanceAdmin = () => {
             <table className="maintenances-table">
                 <thead>
                     <tr>
-                        <th>Photo</th>
-                        <th>Model</th>
+                        <th>Vehicle ID</th>
                         <th>Type</th>
                         <th>Cost</th>
-                        <th>Mechanic Name</th>
-                        <th>Telephone</th>
-                        <th>Last Maintenance</th>
-                        <th>Next Maintenance</th>
+                        <th>Maintenance Date</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -75,14 +72,10 @@ const MaintainanceAdmin = () => {
                     {filteredMaintenances.length > 0 ? (
                         filteredMaintenances.map((car) => (
                             <tr key={car.id}>
-                                <td><img src={`/images/${car.photo}`} alt={car.model} width="50" /></td>
-                                <td>{car.model}</td>
+                                <td>{car.vehicleId}</td>
                                 <td>{car.type}</td>
                                 <td>{car.cost} MAD</td>
-                                <td>{car.mechanicName}</td>
-                                <td>{car.telephone}</td>
-                                <td>{car.lastMaintenance}</td>
-                                <td>{car.nextMaintenance}</td>
+                                <td>{car.maintenance}</td>
                                 <td>{car.status}</td>
                                 <td>
                                     {car.status === 'Available' ? (
@@ -99,7 +92,7 @@ const MaintainanceAdmin = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="10">No maintenance records found</td>
+                            <td colSpan="6">No maintenance records found</td>
                         </tr>
                     )}
                 </tbody>

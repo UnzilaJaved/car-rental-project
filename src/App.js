@@ -17,7 +17,7 @@ import MaintainanceAdmin from "./adminpages/maintainance";
 import IncidentForm from "./adminpages/IncidentReporting";
 import InsuranceForm from "./adminpages/Insurance";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap is imported
-
+import PaymentsAdmin from "./adminpages/Payment";
 function App() {
   return (
     <BrowserRouter>
@@ -38,6 +38,7 @@ function App() {
         <Route path="/maintainance" element={<MaintainanceAdmin/>} />
         <Route path="/incidentreportingform" element={<IncidentForm />} />
         <Route path="/insuranceform" element={<InsuranceForm />} />
+        <Route path="/payments" element={<PaymentsAdmin />} />
         
       </Routes>
     </BrowserRouter>

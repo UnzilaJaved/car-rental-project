@@ -1,7 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import './SignUpPage.css'; // Import the CSS file for styling
+import axios from 'axios'; // Import Axios for making HTTP requests
 
 const SignupPage = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Handle form submission
+  const handleSignup = async (event) => {
+    event.preventDefault();
+
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/signup', {
+        name,
+        email,
+        password,
+      });
+
+      // Handle successful signup
+      if (response.data.success) {
+        console.log("Signup successful");
+        // Redirect user to login or dashboard page
+      } else {
+        setErrorMessage(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+      setErrorMessage("An error occurred. Please try again later.");
+    }
+  };
+
   return (
     <section className="vh-100 signup-background">
       <div className="container h-100">
@@ -15,7 +51,7 @@ const SignupPage = () => {
                       Sign up
                     </p>
 
-                    <form className="mx-1 mx-md-4">
+                    <form className="mx-1 mx-md-4" onSubmit={handleSignup}>
                       <div className="input-group mb-4">
                         <i className="fas fa-user fa-lg me-3 fa-fw input-icon"></i>
                         <div className="form-outline flex-fill mb-0">
@@ -24,6 +60,9 @@ const SignupPage = () => {
                             id="form3Example1c"
                             className="form-control rounded-input"
                             placeholder="Your Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)} // Update name
+                            required
                           />
                         </div>
                       </div>
@@ -36,6 +75,9 @@ const SignupPage = () => {
                             id="form3Example3c"
                             className="form-control rounded-input"
                             placeholder="Your Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)} // Update email
+                            required
                           />
                         </div>
                       </div>
@@ -48,6 +90,9 @@ const SignupPage = () => {
                             id="form3Example4c"
                             className="form-control rounded-input"
                             placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)} // Update password
+                            required
                           />
                         </div>
                       </div>
@@ -60,9 +105,18 @@ const SignupPage = () => {
                             id="form3Example4cd"
                             className="form-control rounded-input"
                             placeholder="Repeat your password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)} // Update confirmPassword
+                            required
                           />
                         </div>
                       </div>
+
+                      {errorMessage && (
+                        <div className="alert alert-danger">
+                          {errorMessage}
+                        </div>
+                      )}
 
                       <div className="form-check d-flex justify-content-center mb-5">
                         <input
@@ -76,7 +130,7 @@ const SignupPage = () => {
                       </div>
 
                       <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                        <button type="button" className="btn btn-custom btn-lg">
+                        <button type="submit" className="btn btn-custom btn-lg">
                           Register
                         </button>
                       </div>
