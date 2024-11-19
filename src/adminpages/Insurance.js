@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './Insurance.css';
-
+import axios from 'axios';
 const InsuranceForm = () => {
+    // State to manage form data
     const [formData, setFormData] = useState({
         insuranceID: '',        // Insurance ID (PK)
         vehicleID: '',          // Vehicle ID (FK)
@@ -10,18 +11,49 @@ const InsuranceForm = () => {
         expiryDate: '',         // Expiry Date
     });
 
+    // State to manage submission state
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // State to manage error messages
+    const [error, setError] = useState('');
+
+    // Handle changes in input fields
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
+        setFormData((prevFormData) => ({
+            ...prevFormData,
             [name]: value,
-        });
+        }));
     };
 
-    const handleSubmit = (e) => {
+    // Handle form submission
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log('Insurance Report:', formData);
+        setIsSubmitting(true); // Start submission
+        setError('');          // Reset errors
+
+        try {
+            console.log('Insurance Report Submitted:', formData);
+
+            //Example: Submit data to a backend API
+            //Uncomment the following block when using a backend API
+            const response = await axios.post('http://localhost:5000/insurance', formData);
+            console.log('Server Response:', response.data);
+
+            //Reset form data upon successful submission
+            setFormData({
+                insuranceID: '',
+                vehicleID: '',
+                policyNumber: '',
+                coverageDetails: '',
+                expiryDate: '',
+            });
+        } catch (err) {
+            console.error('Submission Error:', err);
+            setError('Failed to submit the insurance report. Please try again.');
+        } finally {
+            setIsSubmitting(false); // End submission
+        }
     };
 
     return (
@@ -78,7 +110,13 @@ const InsuranceForm = () => {
                     />
                 </label>
 
-                <button type="submit">Submit Insurance</button>
+                {/* Display error message */}
+                {error && <p className="error-message">{error}</p>}
+
+                {/* Submit button with loading indicator */}
+                <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Submitting...' : 'Submit Insurance'}
+                </button>
             </form>
         </div>
     );

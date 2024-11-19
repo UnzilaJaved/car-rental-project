@@ -3,8 +3,13 @@ import './SignUpPage.css'; // Import the CSS file for styling
 import axios from 'axios'; // Import Axios for making HTTP requests
 
 const SignupPage = () => {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -19,14 +24,19 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/signup', {
-        name,
+      const response = await axios.post('http://backend.test/api/auth/customer/register', {
+        first_name: firstName,
+        last_name: lastName,
         email,
+        phone,
+        address,
+        city,
+        country,
         password,
       });
 
       // Handle successful signup
-      if (response.data.success) {
+      if (response.status === 200) {
         console.log("Signup successful");
         // Redirect user to login or dashboard page
       } else {
@@ -57,11 +67,24 @@ const SignupPage = () => {
                         <div className="form-outline flex-fill mb-0">
                           <input
                             type="text"
-                            id="form3Example1c"
                             className="form-control rounded-input"
-                            placeholder="Your Name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)} // Update name
+                            placeholder="First Name"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="input-group mb-4">
+                        <i className="fas fa-user fa-lg me-3 fa-fw input-icon"></i>
+                        <div className="form-outline flex-fill mb-0">
+                          <input
+                            type="text"
+                            className="form-control rounded-input"
+                            placeholder="Last Name"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
                             required
                           />
                         </div>
@@ -72,11 +95,66 @@ const SignupPage = () => {
                         <div className="form-outline flex-fill mb-0">
                           <input
                             type="email"
-                            id="form3Example3c"
                             className="form-control rounded-input"
-                            placeholder="Your Email"
+                            placeholder="Email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)} // Update email
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="input-group mb-4">
+                        <i className="fas fa-phone fa-lg me-3 fa-fw input-icon"></i>
+                        <div className="form-outline flex-fill mb-0">
+                          <input
+                            type="text"
+                            className="form-control rounded-input"
+                            placeholder="Phone Number"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="input-group mb-4">
+                        <i className="fas fa-home fa-lg me-3 fa-fw input-icon"></i>
+                        <div className="form-outline flex-fill mb-0">
+                          <input
+                            type="text"
+                            className="form-control rounded-input"
+                            placeholder="Address"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="input-group mb-4">
+                        <i className="fas fa-city fa-lg me-3 fa-fw input-icon"></i>
+                        <div className="form-outline flex-fill mb-0">
+                          <input
+                            type="text"
+                            className="form-control rounded-input"
+                            placeholder="City"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="input-group mb-4">
+                        <i className="fas fa-globe fa-lg me-3 fa-fw input-icon"></i>
+                        <div className="form-outline flex-fill mb-0">
+                          <input
+                            type="text"
+                            className="form-control rounded-input"
+                            placeholder="Country"
+                            value={country}
+                            onChange={(e) => setCountry(e.target.value)}
                             required
                           />
                         </div>
@@ -87,11 +165,10 @@ const SignupPage = () => {
                         <div className="form-outline flex-fill mb-0">
                           <input
                             type="password"
-                            id="form3Example4c"
                             className="form-control rounded-input"
                             placeholder="Password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)} // Update password
+                            onChange={(e) => setPassword(e.target.value)}
                             required
                           />
                         </div>
@@ -102,11 +179,10 @@ const SignupPage = () => {
                         <div className="form-outline flex-fill mb-0">
                           <input
                             type="password"
-                            id="form3Example4cd"
                             className="form-control rounded-input"
                             placeholder="Repeat your password"
                             value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)} // Update confirmPassword
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                             required
                           />
                         </div>

@@ -10,32 +10,39 @@ function LoginPage() {
 
   // Handle form submission
   const handleLogin = async (event) => {
-    event.preventDefault(); // Prevent the default form submission
-
+    event.preventDefault(); // Prevent default form submission
+  
     try {
-      // Send the form data to the backend API
-      const response = await axios.post('http://backend.test/auth/login', {
+      // Send form data to the backend API
+      const response = await axios.post('http://backend.test/api/auth/customer/login', {
         email,
         password,
-      }).then((response)=>{
-        console.log("Login:",response);
-      }).catch((error)=>{
-        console.log("error:",error);
       });
-
-      // Handle the successful login response (e.g., store token, redirect)
-      if (response.data.success) {
+  
+      // Handle successful login
+      if (response.status === 200) {
         console.log("Login successful");
+        const token = response.data.data.token;
+        localStorage.setItem("token", token);
+        console.log(token);
+        
         // Redirect user or perform actions after successful login
       } else {
+        console.log(response);
         setErrorMessage("Invalid credentials. Please try again.");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setErrorMessage("An error occurred. Please try again later.");
+  
+      // Handle cases where response might be undefined
+      if (error.response) {
+        setErrorMessage(error.response.data.message || "Invalid credentials.");
+      } else {
+        setErrorMessage("An error occurred. Please try again later.");
+      }
     }
   };
-
+  
   return (
     <section className="vh-100 login-background">
       <div className="container py-5 h-100">

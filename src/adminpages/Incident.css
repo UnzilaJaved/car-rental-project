@@ -1,73 +1,83 @@
-/* Container for the form */
-.incident-form {
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    max-width: 500px;
-    margin: 0 auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%; /* Ensures the form is responsive */
+.incident-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
 }
 
-/* Heading styles */
-.incident-form h2 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.5em;
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
 }
 
-/* Label styles */
-.incident-form label {
-    display: block;
-    margin: 10px 0 5px;
-    color: #555;
-    font-size: 1em;
+.error-message {
+  color: red;
+  text-align: center;
 }
 
-/* Input and textarea fields */
-.incident-form input,
-.incident-form textarea {
-    width: 100%;
-    padding: 12px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    margin-bottom: 15px;
-    font-size: 1em;
-    background-color: #fafafa;
+.incident-list ul {
+  list-style: none;
+  padding: 0;
 }
 
-/* Focus state for input/textarea */
-.incident-form input:focus,
-.incident-form textarea:focus {
-    border-color: #007bff;
-    outline: none;
+.incident-item {
+  padding: 15px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
 }
 
-/* Button styles */
-.incident-form button {
-    background-color: #007bff;
-    color: #fff;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 1.1em;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+.incident-item p {
+  margin: 0;
 }
 
-/* Hover effect for button */
-.incident-form button:hover {
-    background-color: #0056b3;
+.form-container {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Button focus state */
-.incident-form button:focus {
-    outline: none;
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input, textarea {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-btn, .delete-btn {
+  padding: 10px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.add-btn {
+  background-color: #4caf50;
+}
+
+.delete-btn {
+  background-color: #f44336;
+}
+
+.add-btn:hover {
+  background-color: #45a049;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
 }
