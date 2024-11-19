@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios'; // Import Axios for HTTP requests
 import './RentalCar.css'; // Updated CSS for enhanced design
 
 const RentalCar = () => {
@@ -10,8 +11,9 @@ const RentalCar = () => {
   const [returnDate, setReturnDate] = useState('');
   const [totalDays, setTotalDays] = useState(0);
   const [totalPrice, setTotalPrice] = useState(car ? car.price : 0);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  // Always call the useEffect hook
   useEffect(() => {
     if (rentalDate && returnDate) {
       const rental = new Date(rentalDate);
@@ -32,7 +34,38 @@ const RentalCar = () => {
     }
   }, [rentalDate, returnDate, car?.price]); // Use optional chaining to avoid errors if car is undefined
 
-  // Conditionally return content based on car availability
+  // Function to handle renting a car
+  const handleRentNow = async () => {
+    if (!rentalDate || !returnDate) {
+      setErrorMessage("Please select both rental and return dates.");
+      return;
+    }
+
+    const rentalData = {
+      car_id: car.id, // Assuming car object contains an id field
+      rental_date: rentalDate,
+      return_date: returnDate,
+      total_price: totalPrice,
+    };
+
+    try {
+      const response = await axios.post('http://backend.test/api/rent-car', rentalData);
+
+      if (response.status === 200) {
+        setSuccessMessage("Car rental request submitted successfully!");
+        setErrorMessage('');
+      } else {
+        setErrorMessage(response.data.message || "Failed to rent the car. Please try again.");
+        setSuccessMessage('');
+      }
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "An error occurred while submitting your request."
+      );
+      setSuccessMessage('');
+    }
+  };
+
   if (!car) {
     return <p>No car selected</p>;
   }
@@ -69,32 +102,23 @@ const RentalCar = () => {
             <p><strong>Availability:</strong> {car.isAvailable ? 'Yes' : 'No'}</p>
           </div>
 
-          {/* Show total days and total price */}
           <div className="car-price">
             <p>Total Days: {totalDays > 0 ? totalDays : 1} day(s)</p>
             <p>{totalPrice} PKR (Total)</p>
           </div>
 
-          {/* Conditionally show "Rent Now" button if the car is available */}
+          {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+          {successMessage && <div className="alert alert-success">{successMessage}</div>}
+
           {car.isAvailable && (
-            <button className="rent-button">Rent Now</button>
+            <button className="rent-button" onClick={handleRentNow}>
+              Rent Now
+            </button>
           )}
         </div>
       </div>
     </div>
   );
 };
-export default RentalCar;  /* RentalCar.css */
 
-
-
-
-
-
-
-
-
-
-
-
-
+export default RentalCar;
