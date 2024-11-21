@@ -24,11 +24,11 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await axios.post('http://backend.test/api/auth/customer/register', {
+      const response = await axios.post('http://127.0.0.1:8000/api/auth/customer/register', {
         first_name: firstName,
         last_name: lastName,
         email,
-        phone,
+        phone_number: phone,
         address,
         city,
         country,

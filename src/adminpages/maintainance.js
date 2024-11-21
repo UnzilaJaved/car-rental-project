@@ -5,18 +5,18 @@ const MaintenanceAdmin = () => {
   const [maintenances, setMaintenances] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [newMaintenance, setNewMaintenance] = useState({
-    vehicleId: '',
-    type: '',
+    veh_id: '',
+    maintenance_date: '',
+    description: '',
     cost: '',
-    maintenanceDate: '',
-    status: 'Available',
+    status: 'MAINTENANCE DONE',
   });
 
   // Fetch maintenance records
   useEffect(() => {
     const fetchMaintenances = async () => {
       try {
-        const response = await fetch('http://localhost:8000/admin/maintenance'); // Replace with backend URL
+        const response = await fetch('http://127.0.0.1:8000/admin/maintenance');
         const data = await response.json();
         setMaintenances(data);
       } catch (error) {
@@ -30,7 +30,7 @@ const MaintenanceAdmin = () => {
   const handleAddMaintenance = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/admin/maintenance', {
+      const response = await fetch('http://127.0.0.1:8000/admin/maintenance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMaintenance),
@@ -39,11 +39,11 @@ const MaintenanceAdmin = () => {
         const addedMaintenance = await response.json();
         setMaintenances([...maintenances, addedMaintenance]);
         setNewMaintenance({
-          vehicleId: '',
-          type: '',
+          veh_id: '',
+          maintenance_date: '',
+          description: '',
           cost: '',
-          maintenanceDate: '',
-          status: 'Available',
+          status: 'MAINTENANCE DONE',
         });
       }
     } catch (error) {
@@ -54,7 +54,7 @@ const MaintenanceAdmin = () => {
   // Update maintenance status
   const handleUpdateStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:8000/admin/maintenance/${id}`, {
+      const response = await fetch(`http://127.0.0.1:8000/admin/maintenance/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
@@ -63,7 +63,7 @@ const MaintenanceAdmin = () => {
         const updatedMaintenance = await response.json();
         setMaintenances(
           maintenances.map((maintenance) =>
-            maintenance.id === id ? updatedMaintenance : maintenance
+            maintenance.main_id === id ? updatedMaintenance : maintenance
           )
         );
       }
@@ -75,11 +75,11 @@ const MaintenanceAdmin = () => {
   // Delete maintenance record
   const handleDeleteMaintenance = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8000/admin/maintenance/${id}`, {
+      const response = await fetch(`http://127.0.0.1:8000/admin/maintenance/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
-        setMaintenances(maintenances.filter((maintenance) => maintenance.id !== id));
+        setMaintenances(maintenances.filter((maintenance) => maintenance.main_id !== id));
       }
     } catch (error) {
       console.error('Error deleting maintenance:', error);
@@ -89,8 +89,8 @@ const MaintenanceAdmin = () => {
   // Filter maintenance records
   const filteredMaintenances = maintenances.filter((maintenance) => {
     return (
-      maintenance.vehicleId?.toLowerCase().includes(searchTerm) ||
-      maintenance.type?.toLowerCase().includes(searchTerm)
+      maintenance.veh_id.toString().includes(searchTerm) ||
+      maintenance.description.toLowerCase().includes(searchTerm)
     );
   });
 
@@ -102,7 +102,7 @@ const MaintenanceAdmin = () => {
       <input
         type="text"
         className="search-bar"
-        placeholder="Search by Vehicle ID or Type..."
+        placeholder="Search by Vehicle ID or Description..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
       />
@@ -111,26 +111,23 @@ const MaintenanceAdmin = () => {
       <form onSubmit={handleAddMaintenance} className="add-maintenance">
         <h3>Add Maintenance</h3>
         <input
-          type="text"
-          name="vehicleId"
+          type="number"
           placeholder="Vehicle ID"
-          value={newMaintenance.vehicleId}
+          value={newMaintenance.veh_id}
           onChange={(e) =>
-            setNewMaintenance({ ...newMaintenance, vehicleId: e.target.value })
+            setNewMaintenance({ ...newMaintenance, veh_id: e.target.value })
           }
         />
         <input
           type="text"
-          name="type"
-          placeholder="Type"
-          value={newMaintenance.type}
+          placeholder="Description"
+          value={newMaintenance.description}
           onChange={(e) =>
-            setNewMaintenance({ ...newMaintenance, type: e.target.value })
+            setNewMaintenance({ ...newMaintenance, description: e.target.value })
           }
         />
         <input
           type="number"
-          name="cost"
           placeholder="Cost"
           value={newMaintenance.cost}
           onChange={(e) =>
@@ -139,13 +136,9 @@ const MaintenanceAdmin = () => {
         />
         <input
           type="date"
-          name="maintenanceDate"
-          value={newMaintenance.maintenanceDate}
+          value={newMaintenance.maintenance_date}
           onChange={(e) =>
-            setNewMaintenance({
-              ...newMaintenance,
-              maintenanceDate: e.target.value,
-            })
+            setNewMaintenance({ ...newMaintenance, maintenance_date: e.target.value })
           }
         />
         <button type="submit">Add Maintenance</button>
@@ -156,7 +149,7 @@ const MaintenanceAdmin = () => {
         <thead>
           <tr>
             <th>Vehicle ID</th>
-            <th>Type</th>
+            <th>Description</th>
             <th>Cost</th>
             <th>Date</th>
             <th>Status</th>
@@ -165,34 +158,27 @@ const MaintenanceAdmin = () => {
         </thead>
         <tbody>
           {filteredMaintenances.map((maintenance) => (
-            <tr key={maintenance.id}>
-              <td>{maintenance.vehicleId}</td>
-              <td>{maintenance.type}</td>
+            <tr key={maintenance.main_id}>
+              <td>{maintenance.veh_id}</td>
+              <td>{maintenance.description}</td>
               <td>{maintenance.cost}</td>
-              <td>{maintenance.maintenanceDate}</td>
+              <td>{maintenance.maintenance_date}</td>
               <td>{maintenance.status}</td>
               <td>
                 <button
                   onClick={() =>
                     handleUpdateStatus(
-                      maintenance.id,
-                      maintenance.status === 'Available'
-                        ? 'Under Maintenance'
-                        : 'Available'
+                      maintenance.main_id,
+                      maintenance.status === 'MAINTENANCE DONE'
+                        ? 'UNDER MAINTENANCE'
+                        : 'MAINTENANCE DONE'
                     )
                   }
-                  className={
-                    maintenance.status === 'Available' ? 'mark-button' : 'complete-button'
-                  }
+                  className={maintenance.status === 'MAINTENANCE DONE' ? 'under-maintenance' : 'done'}
                 >
-                  {maintenance.status === 'Available' ? 'Start' : 'Complete'}
+                  Toggle Status
                 </button>
-                <button
-                  onClick={() => handleDeleteMaintenance(maintenance.id)}
-                  className="delete-button"
-                >
-                  Delete
-                </button>
+                <button onClick={() => handleDeleteMaintenance(maintenance.main_id)}>Delete</button>
               </td>
             </tr>
           ))}

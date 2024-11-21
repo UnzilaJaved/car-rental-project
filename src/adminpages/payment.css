@@ -2,22 +2,26 @@
 
 .payments-page {
     padding: 20px;
+    font-family: Arial, sans-serif;
 }
 
 .payments-page h2 {
     font-size: 24px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .payments-table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
 }
 
 .payments-table th, .payments-table td {
     padding: 12px;
     border: 1px solid #ddd;
     text-align: center;
+    font-size: 16px;
 }
 
 .payments-table th {
@@ -54,10 +58,99 @@ button {
     border: none;
     cursor: pointer;
     border-radius: 4px;
+    transition: background-color 0.3s;
+    font-size: 14px;
+    margin-right: 10px;
 }
 
 button:hover {
     background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Add Payment Form Styles */
+.add-payment-form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-payment-form h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.add-payment-form label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.add-payment-form input, 
+.add-payment-form select {
+    padding: 8px;
+    width: 100%;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.add-payment-form input[type="datetime-local"] {
+    width: 200px;
+}
+
+.add-payment-form button {
+    background-color: #007BFF; /* Blue */
+    margin-top: 10px;
+    padding: 10px 20px;
+}
+
+.add-payment-form button:hover {
+    background-color: #0056b3;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.payments-list {
+    margin-top: 20px;
+}
+
+.payments-list ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.payments-list li {
+    background-color: #f9f9f9;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.payments-list li p {
+    margin: 5px 0;
+}
+
+.payments-list li button {
+    margin-top: 10px;
+    background-color: #FF5733; /* Red */
+}
+
+.payments-list li button:hover {
+    background-color: #e64a19;
 }
 
 button:disabled {

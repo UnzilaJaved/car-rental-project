@@ -1,118 +1,108 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios'; // Import Axios for HTTP requests
-import './RentalCar.css'; // Updated CSS for enhanced design
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import "./RentalCar.css";
 
 const RentalCar = () => {
   const location = useLocation();
-  const { car } = location.state || {}; // Get car data from navigation state
+  const { car } = location.state || {};
 
-  const [rentalDate, setRentalDate] = useState('');
-  const [returnDate, setReturnDate] = useState('');
-  const [totalDays, setTotalDays] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(car ? car.price : 0);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [rentalDate, setRentalDate] = useState("");
+  const [returnDate, setReturnDate] = useState("");
+  const [totalDays, setTotalDays] = useState(1); // Default to 1 day
+  const [totalPrice, setTotalPrice] = useState(car?.daily_rate || 0); // Use `daily_rate` from the database
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (rentalDate && returnDate) {
       const rental = new Date(rentalDate);
       const returning = new Date(returnDate);
 
-      // Calculate difference in time and convert to number of days
-      const timeDifference = returning.getTime() - rental.getTime();
-      const days = Math.ceil(timeDifference / (1000 * 3600 * 24));
-
-      // Update state
+      // Calculate the difference in days
+      const days = Math.ceil((returning - rental) / (1000 * 3600 * 24));
       if (days > 0) {
         setTotalDays(days);
-        setTotalPrice(days * car.price); // Calculate total price based on days
+        setTotalPrice(days * car.daily_rate); // Use `daily_rate` to calculate total price
       } else {
-        setTotalDays(0);
-        setTotalPrice(car.price); // Default to one day price
+        setTotalDays(1); // Minimum rental period is 1 day
+        setTotalPrice(car.daily_rate);
       }
     }
-  }, [rentalDate, returnDate, car?.price]); // Use optional chaining to avoid errors if car is undefined
+  }, [rentalDate, returnDate, car?.daily_rate]);
 
-  // Function to handle renting a car
   const handleRentNow = async () => {
     if (!rentalDate || !returnDate) {
       setErrorMessage("Please select both rental and return dates.");
       return;
     }
 
-    const rentalData = {
-      car_id: car.id, // Assuming car object contains an id field
-      rental_date: rentalDate,
-      return_date: returnDate,
-      total_price: totalPrice,
-    };
-
+    setIsSubmitting(true);
     try {
-      const response = await axios.post('http://backend.test/api/rent-car', rentalData);
+      const response = await axios.post("http://127.0.0.1:8000/api/rent-car", {
+        car_id: car.id,
+        rental_date: rentalDate,
+        return_date: returnDate,
+        total_price: totalPrice,
+      });
 
       if (response.status === 200) {
         setSuccessMessage("Car rental request submitted successfully!");
-        setErrorMessage('');
+        setErrorMessage("");
       } else {
         setErrorMessage(response.data.message || "Failed to rent the car. Please try again.");
-        setSuccessMessage('');
       }
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || "An error occurred while submitting your request."
       );
-      setSuccessMessage('');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (!car) {
-    return <p>No car selected</p>;
-  }
+  if (!car) return <div>No car information found. Please go back and select a car.</div>;
 
   return (
     <div className="rental-car-page">
       <div className="car-image-section">
-        <img src={car.image} alt={car.model} className="car-large-image" />
+        <img src={car.image || "/default-placeholder.png"} alt={car.model} className="car-large-image" />
       </div>
       <div className="car-details-section">
         <h2>{car.model}</h2>
         <div className="car-rental-form">
-          <label htmlFor="rentalDate">Rental date</label>
+          <label htmlFor="rentalDate">Rental Date</label>
           <input
             type="date"
             id="rentalDate"
-            name="rentalDate"
             value={rentalDate}
             onChange={(e) => setRentalDate(e.target.value)}
           />
 
-          <label htmlFor="returnDate">Return date</label>
+          <label htmlFor="returnDate">Return Date</label>
           <input
             type="date"
             id="returnDate"
-            name="returnDate"
             value={returnDate}
             onChange={(e) => setReturnDate(e.target.value)}
           />
 
-          <div className="car-info">
-            <p><strong>Gearbox:</strong> {car.gearbox}</p>
-            <p><strong>Fuel type:</strong> {car.fuel}</p>
-            <p><strong>Availability:</strong> {car.isAvailable ? 'Yes' : 'No'}</p>
-          </div>
-
           <div className="car-price">
-            <p>Total Days: {totalDays > 0 ? totalDays : 1} day(s)</p>
-            <p>{totalPrice} PKR (Total)</p>
+            <p>Total Days: {totalDays}</p>
+            <p>Total Price: {totalPrice} PKR</p>
           </div>
 
           {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
           {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
-          {car.isAvailable && (
-            <button className="rent-button" onClick={handleRentNow}>
-              Rent Now
+          {car.status === 1 && (
+            <button
+              className="rent-button"
+              onClick={handleRentNow}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Processing..." : "Rent Now"}
             </button>
           )}
         </div>

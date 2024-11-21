@@ -1,29 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import './carsadmin.css';
-const CarsAdmin = () => {
-  const [cars, setCars] = useState(() => {
-    const savedCars = localStorage.getItem('cars');
-    return savedCars ? JSON.parse(savedCars) : [
-      { id: 11, photo: 'golf-6.jpg', brand: 'golf-6', model: '2010', gearbox: 'automatic', type: 'diesel', price: '550 MAD', availability: false },
-      { id: 12, photo: 'mercedes.jpg', brand: 'mercedes', model: '2016', gearbox: 'manual', type: 'gas', price: '600 MAD', availability: false },
-      { id: 13, photo: 'dacia.jpg', brand: 'dacia', model: '2018', gearbox: 'automatic', type: 'gas', price: '300 MAD', availability: false },
-      { id: 14, photo: 'toyota.jpg', brand: 'toyota', model: '2018', gearbox: 'automatic', type: 'gas', price: '600 MAD', availability: false }
-    ];
-  });
 
+const CarsAdmin = () => {
+  const [cars, setCars] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [newCar, setNewCar] = useState({
-    id: '', photo: '', brand: '', model: '', gearbox: '', type: '', price: '', availability: false
+    model: '',
+    brand: '',
+    year: '',
+    reg_number: '',
+    status: '',
+    daily_rate: '',
+    mileage: '',
   });
   const [editingCarId, setEditingCarId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [carToDelete, setCarToDelete] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
+  // Fetch cars from the backend on component mount
   useEffect(() => {
-    localStorage.setItem('cars', JSON.stringify(cars));
-  }, [cars]);
+    fetch('http://127.0.0.1:8000/api/list')
+      .then((response) => response.json())
+      .then((data) => setCars(data))
+      .catch((error) => console.error('Error fetching cars:', error));
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,30 +34,85 @@ const CarsAdmin = () => {
   const handleAddCar = () => {
     setIsFormVisible(true);
     setEditingCarId(null);
-    setNewCar({ id: '', photo: '', brand: '', model: '', gearbox: '', type: '', price: '', availability: false });
+    setNewCar({
+      model: '',
+      brand: '',
+      year: '',
+      reg_number: '',
+      status: '',
+      daily_rate: '',
+      mileage: '',
+    });
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (editingCarId) {
-      setCars(cars.map(car => car.id === editingCarId ? { ...car, ...newCar } : car));
-    } else {
-      setCars([...cars, { ...newCar, id: cars.length + 11 }]);
+    const url = editingCarId
+      ? `http://127.0.0.1:8000/api/update-vehicles/${editingCarId}`
+      : 'http://127.0.0.1:8000/api/add-vehicles';
+    const method = editingCarId ? 'PUT' : 'POST';
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCar),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+
+        if (editingCarId) {
+          // Update car in the frontend
+          setCars(cars.map((car) => (car.id === editingCarId ? result : car)));
+        } else {
+          // Add the new car to the frontend immediately
+          setCars([result, ...cars]);
+          setSuccessMessage('Car added successfully!');
+        }
+
+        // Hide the form and reset the fields for the next car addition
+        setIsFormVisible(false);
+        setNewCar({
+          model: '',
+          brand: '',
+          year: '',
+          reg_number: '',
+          status: '',
+          daily_rate: '',
+          mileage: '',
+        });
+        setEditingCarId(null);
+
+        // Clear the success message after 3 seconds
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 3000);
+      } else {
+        console.error('Failed to save car');
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
-    setIsFormVisible(false);
-    setNewCar({ id: '', photo: '', brand: '', model: '', gearbox: '', type: '', price: '', availability: false });
-    setEditingCarId(null);
   };
 
-  const handleDeleteCar = () => {
-    setCars(cars.filter(car => car.id !== carToDelete));
-    setShowDeleteModal(false);
-    setCarToDelete(null);
-  };
+  const handleDeleteCar = async (id) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/deleted/${id}`, {
+        method: 'DELETE',
+      });
 
-  const handleDeleteClick = (id) => {
-    setShowDeleteModal(true);
-    setCarToDelete(id);
+      if (response.ok) {
+        // Filter out the deleted car from the cars list
+        setCars(cars.filter((car) => car.id !== id));
+      } else {
+        console.error('Failed to delete car');
+      }
+    } catch (error) {
+      console.error('Error deleting car:', error);
+    }
   };
 
   const handleEditCar = (car) => {
@@ -69,17 +125,21 @@ const CarsAdmin = () => {
     setSearchTerm(e.target.value.toLowerCase());
   };
 
-  const filteredCars = cars.filter(car =>
-    car.brand.toLowerCase().includes(searchTerm) ||
-    car.model.toLowerCase().includes(searchTerm) ||
-    car.gearbox.toLowerCase().includes(searchTerm) ||
-    car.type.toLowerCase().includes(searchTerm)
-  );
+  // Filter cars based on search term and ensure we don't call toLowerCase on undefined values
+  const filteredCars = cars.filter((car) => {
+    const modelMatch = car.model ? car.model.toLowerCase().includes(searchTerm) : false;
+    const brandMatch = car.brand ? car.brand.toLowerCase().includes(searchTerm) : false;
+    const regNumberMatch = car.reg_number ? car.reg_number.toLowerCase().includes(searchTerm) : false;
+
+    return modelMatch || brandMatch || regNumberMatch;
+  });
 
   return (
     <div className="cars-section">
       <div className="header">
-        <button className="add-car-button" onClick={handleAddCar}>+ Add car</button>
+        <button className="add-car-button" onClick={handleAddCar}>
+          + Add car
+        </button>
         <input
           type="text"
           placeholder="Search for cars"
@@ -89,15 +149,68 @@ const CarsAdmin = () => {
         />
       </div>
 
+      {/* Success Message */}
+      {successMessage && <div className="success-message">{successMessage}</div>}
+
       {isFormVisible && (
         <form className="car-form" onSubmit={handleFormSubmit}>
-          <input type="text" name="photo" placeholder="Photo Path" value={newCar.photo} onChange={handleInputChange} required />
-          <input type="text" name="brand" placeholder="Brand" value={newCar.brand} onChange={handleInputChange} required />
-          <input type="text" name="model" placeholder="Model" value={newCar.model} onChange={handleInputChange} required />
-          <input type="text" name="gearbox" placeholder="Gearbox" value={newCar.gearbox} onChange={handleInputChange} required />
-          <input type="text" name="type" placeholder="Type" value={newCar.type} onChange={handleInputChange} required />
-          <input type="text" name="price" placeholder="Price" value={newCar.price} onChange={handleInputChange} required />
-          <button type="submit">{editingCarId ? "Update Car" : "Add Car"}</button>
+          <input
+            type="text"
+            name="model"
+            placeholder="Model"
+            value={newCar.model}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="text"
+            name="brand"
+            placeholder="Brand"
+            value={newCar.brand}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="number"
+            name="year"
+            placeholder="Year"
+            value={newCar.year}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="text"
+            name="reg_number"
+            placeholder="Registration Number"
+            value={newCar.reg_number}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="text"
+            name="status"
+            placeholder="Status"
+            value={newCar.status}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="number"
+            name="daily_rate"
+            placeholder="Daily Rate"
+            value={newCar.daily_rate}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="number"
+            name="mileage"
+            placeholder="Mileage"
+            value={newCar.mileage}
+            onChange={handleInputChange}
+            required
+          />
+          <button type="submit">{editingCarId ? 'Update Car' : 'Add Car'}</button>
         </form>
       )}
 
@@ -105,13 +218,13 @@ const CarsAdmin = () => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Photo</th>
-            <th>Brand</th>
             <th>Model</th>
-            <th>Gearbox</th>
-            <th>Type</th>
-            <th>Price</th>
-            <th>Availability</th>
+            <th>Brand</th>
+            <th>Year</th>
+            <th>Registration Number</th>
+            <th>Status</th>
+            <th>Daily Rate</th>
+            <th>Mileage</th>
             <th>Operations</th>
           </tr>
         </thead>
@@ -119,31 +232,28 @@ const CarsAdmin = () => {
           {filteredCars.map((car) => (
             <tr key={car.id}>
               <td>{car.id}</td>
-              <td><img src={`/images/${car.photo}`} alt={car.brand} className="car-photo" /></td>
-              <td>{car.brand}</td>
               <td>{car.model}</td>
-              <td>{car.gearbox}</td>
-              <td>{car.type}</td>
-              <td>{car.price}</td>
-              <td>{car.availability ? 'Available' : 'Unavailable'}</td>
+              <td>{car.brand}</td>
+              <td>{car.year}</td>
+              <td>{car.reg_number}</td>
+              <td>{car.status}</td>
+              <td>{car.daily_rate}</td>
+              <td>{car.mileage}</td>
               <td>
-                <button className="edit-button" onClick={() => handleEditCar(car)}><FaEdit /></button>
-                <button className="delete-button" onClick={() => handleDeleteClick(car.id)}><FaTrash /></button>
+                <button className="edit-button" onClick={() => handleEditCar(car)}>
+                  <FaEdit />
+                </button>
+                <button
+                  className="delete-button"
+                  onClick={() => handleDeleteCar(car.id)}
+                >
+                  <FaTrash />
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {showDeleteModal && (
-        <div className="delete-modal">
-          <div className="modal-content">
-            <p>Are you sure you want to delete this car?</p>
-            <button className="confirm-button" onClick={handleDeleteCar}>Yes</button>
-            <button className="cancel-button" onClick={() => setShowDeleteModal(false)}>No</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

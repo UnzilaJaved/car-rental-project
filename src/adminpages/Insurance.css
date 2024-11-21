@@ -1,73 +1,16 @@
-/* Container for the insurance form */
-.insurance-form {
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    max-width: 500px;
-    margin: 0 auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%; /* Ensures the form is responsive */
-}
-
-/* Heading styles */
-.insurance-form h2 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.5em;
-}
-
-/* Label styles */
-.insurance-form label {
-    display: block;
-    margin: 10px 0 5px;
-    color: #555;
-    font-size: 1em;
-}
-
-/* Input and textarea fields */
-.insurance-form input,
-.insurance-form textarea {
-    width: 100%;
-    padding: 12px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    margin-bottom: 15px;
-    font-size: 1em;
-    background-color: #fafafa;
-}
-
-/* Focus state for input/textarea */
-.insurance-form input:focus,
-.insurance-form textarea:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-/* Button styles */
-.insurance-form button {
-    background-color: #007bff;
+/* Style for Edit Button */
+.edit-btn {
+    background-color: #ffc107;
     color: #fff;
-    padding: 12px 20px;
-    border: none;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
-    width: 100%;
-    font-size: 1.1em;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-/* Hover effect for button */
-.insurance-form button:hover {
-    background-color: #0056b3;
-}
-
-/* Button focus state */
-.insurance-form button:focus {
-    outline: none;
-}
+    font-size: 0.9em;
+    margin-left: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .edit-btn:hover {
+    background-color: #e0a800;
+  }
+  

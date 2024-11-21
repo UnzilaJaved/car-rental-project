@@ -1,149 +1,68 @@
-/* General Layout */
 .maintenances-page {
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-    background-color: #f7f7f7;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Search Bar */
-.search-bar {
-    width: 100%;
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  .search-bar {
     padding: 10px;
     margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Add Maintenance Form */
-.add-maintenance {
-    margin-bottom: 30px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-}
-
-.add-maintenance h3 {
-    margin-bottom: 15px;
-    font-size: 20px;
-    color: #333;
-}
-
-.add-maintenance input {
     width: 100%;
+    max-width: 400px;
+  }
+  
+  .add-maintenance {
+    margin-bottom: 20px;
+  }
+  
+  .add-maintenance input {
     padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.add-maintenance button {
+    margin: 5px;
     width: 100%;
+    max-width: 300px;
+  }
+  
+  .add-maintenance button {
     padding: 10px;
-    font-size: 16px;
-    background-color: #4caf50;
+    margin-top: 10px;
+    background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.add-maintenance button:hover {
+  }
+  
+  .add-maintenance button:hover {
     background-color: #45a049;
-}
-
-/* Table Styles */
-.maintenances-table {
+  }
+  
+  .maintenances-table {
     width: 100%;
     border-collapse: collapse;
-    background: #fff;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.maintenances-table th, .maintenances-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.maintenances-table th {
-    background-color: #4caf50;
+    margin-top: 20px;
+  }
+  
+  .maintenances-table th,
+  .maintenances-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  button {
+    padding: 5px 10px;
+    margin: 5px;
+  }
+  
+  button.done {
+    background-color: #4CAF50;
     color: white;
-    font-size: 16px;
-}
-
-.maintenances-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.maintenances-table tr:hover {
-    background-color: #f1f1f1;
-}
-
-/* Buttons in the Table */
-button {
-    padding: 8px 12px;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.complete-button {
-    background-color: #2196f3;
-    color: white;
-}
-
-.complete-button:hover {
-    background-color: #0b7dda;
-}
-
-.mark-button {
+  }
+  
+  button.under-maintenance {
     background-color: #ff9800;
     color: white;
-}
-
-.mark-button:hover {
-    background-color: #fb8c00;
-}
-
-.delete-button {
-    background-color: #f44336;
-    color: white;
-}
-
-.delete-button:hover {
-    background-color: #e53935;
-}
-
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-    .maintenances-page {
-        padding: 15px;
-    }
-
-    .add-maintenance input,
-    .add-maintenance button {
-        font-size: 14px;
-    }
-
-    .maintenances-table th, .maintenances-table td {
-        font-size: 14px;
-    }
-
-    .search-bar {
-        font-size: 14px;
-    }
-}
+  }
+  
+  button:hover {
+    background-color: #ddd;
+  }
+  

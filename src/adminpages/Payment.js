@@ -1,71 +1,195 @@
-// PaymentsAdmin.js
-import React, { useState, useEffect } from 'react';
-import './adminhome.css';
-import './payment.css';
-const PaymentsAdmin = () => {
-    const [payments, setPayments] = useState(() => {
-        const savedPayments = localStorage.getItem('payments');
-        return savedPayments ? JSON.parse(savedPayments) : [
-            { paymentId: 1, invoiceId: 'INV001', rentalId: 1, status: false },
-            { paymentId: 2, invoiceId: 'INV002', rentalId: 2, status: false },
-            { paymentId: 3, invoiceId: 'INV003', rentalId: 3, status: false }
-        ];
-    });
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./payment.css";
 
-    useEffect(() => {
-        localStorage.setItem('payments', JSON.stringify(payments));
-    }, [payments]);
+const PaymentsManagement = () => {
+  const [payments, setPayments] = useState([]);
+  const [newPayment, setNewPayment] = useState({
+    rental_id: "",
+    amount: "",
+    payment_date: "",
+    payment_method: "CASH",
+    status: "PENDING",
+  });
+  const [editingPayment, setEditingPayment] = useState(null); // Track the payment being edited
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-    const handleApprove = (paymentId) => {
-        const updatedPayments = payments.map(payment =>
-            payment.paymentId === paymentId ? { ...payment, status: true } : payment
-        );
-        setPayments(updatedPayments);
+  const API_URL = "http://127.0.0.1:8000/api/admin/payment";
 
-        // Also update the rental status in local storage if payment is approved
-        const savedRents = localStorage.getItem('rents');
-        if (savedRents) {
-            const rents = JSON.parse(savedRents);
-            const updatedRents = rents.map(rent =>
-                updatedPayments.find(payment => payment.rentalId === rent.id && payment.status === true)
-                    ? { ...rent, status: 'Paid' }
-                    : rent
-            );
-            localStorage.setItem('rents', JSON.stringify(updatedRents));
-        }
+  // Fetch all payments on page load
+  useEffect(() => {
+    fetchPayments();
+  }, []);
+
+  // Function to fetch all payments from the backend
+  const fetchPayments = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(API_URL);
+      setPayments(response.data);
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage("Failed to load payments. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to add a new payment
+  const handleAddPayment = async () => {
+    if (!newPayment.rental_id || !newPayment.amount || !newPayment.payment_date) {
+      setErrorMessage("All fields are required.");
+      return;
+    }
+
+    try {
+      await axios.post(API_URL, newPayment);
+      alert("Payment added successfully!");
+      setNewPayment({
+        rental_id: "",
+        amount: "",
+        payment_date: "",
+        payment_method: "CASH",
+        status: "PENDING",
+      });
+      fetchPayments();
+    } catch (error) {
+      setErrorMessage("Failed to add payment. Please try again.");
+    }
+  };
+
+  // Function to update a payment
+  const handleUpdatePayment = async () => {
+    if (!newPayment.rental_id || !newPayment.amount || !newPayment.payment_date) {
+      setErrorMessage("All fields are required.");
+      return;
+    }
+
+    const updatedPayment = {
+      rental_id: newPayment.rental_id,
+      amount: newPayment.amount,
+      payment_date: newPayment.payment_date,
+      payment_method: newPayment.payment_method,
+      status: newPayment.status,
     };
 
-    return (
-        <div className="payments-page">
-            <h2>Payments</h2>
-            <table className="payments-table">
-                <thead>
-                    <tr>
-                        <th>Payment ID</th>
-                        <th>Invoice ID</th>
-                        <th>Rental ID</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {payments.map(payment => (
-                        <tr key={payment.paymentId}>
-                            <td>{payment.paymentId}</td>
-                            <td>{payment.invoiceId}</td>
-                            <td>{payment.rentalId}</td>
-                            <td>{payment.status ? 'Approved' : 'Pending'}</td>
-                            <td>
-                                {!payment.status && (
-                                    <button onClick={() => handleApprove(payment.paymentId)}>Approve</button>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+    try {
+      await axios.put(`${API_URL}/${editingPayment.payment_id}`, updatedPayment);
+      alert("Payment updated successfully!");
+      fetchPayments();
+      setEditingPayment(null); // Reset editing mode after update
+      setNewPayment({
+        rental_id: "",
+        amount: "",
+        payment_date: "",
+        payment_method: "CASH",
+        status: "PENDING",
+      });
+    } catch (error) {
+      setErrorMessage("Failed to update payment. Please try again.");
+    }
+  };
+
+  // Function to delete a payment
+  const handleDeletePayment = async (paymentId) => {
+    try {
+      await axios.delete(`${API_URL}/${paymentId}`);
+      alert("Payment deleted successfully!");
+      fetchPayments();
+    } catch (error) {
+      setErrorMessage("Failed to delete payment. Please try again.");
+    }
+  };
+
+  // Function to set the form fields to edit an existing payment
+  const handleEditPayment = (payment) => {
+    setEditingPayment(payment); // Set the payment to be edited
+    setNewPayment({
+      rental_id: payment.rental_id,
+      amount: payment.amount,
+      payment_date: payment.payment_date,
+      payment_method: payment.payment_method,
+      status: payment.status,
+    });
+  };
+
+  return (
+    <div className="payments-management">
+      <h2>Payments Management</h2>
+
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+      {loading ? (
+        <p>Loading payments...</p>
+      ) : payments.length === 0 ? (
+        <p>No payments found.</p>
+      ) : (
+        <div className="payments-list">
+          <h3>Existing Payments</h3>
+          <ul>
+            {payments.map((payment) => (
+              <li key={payment.payment_id}>
+                <p><strong>Rental ID:</strong> {payment.rental_id}</p>
+                <p><strong>Amount:</strong> {payment.amount}</p>
+                <p><strong>Payment Date:</strong> {payment.payment_date}</p>
+                <p><strong>Payment Method:</strong> {payment.payment_method}</p>
+                <p><strong>Status:</strong> {payment.status}</p>
+                <button onClick={() => handleEditPayment(payment)}>Edit</button>
+                <button onClick={() => handleDeletePayment(payment.payment_id)}>Delete</button>
+              </li>
+            ))}
+          </ul>
         </div>
-    );
+      )}
+
+      <div className="add-payment-form">
+        <h3>{editingPayment ? "Edit Payment" : "Add New Payment"}</h3>
+
+        <label>Rental ID:</label>
+        <input
+          type="text"
+          value={newPayment.rental_id}
+          onChange={(e) => setNewPayment({ ...newPayment, rental_id: e.target.value })}
+        />
+        <label>Amount:</label>
+        <input
+          type="number"
+          value={newPayment.amount}
+          onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
+        />
+        <label>Payment Date:</label>
+        <input
+          type="datetime-local"
+          value={newPayment.payment_date}
+          onChange={(e) => setNewPayment({ ...newPayment, payment_date: e.target.value })}
+        />
+        <label>Payment Method:</label>
+        <select
+          value={newPayment.payment_method}
+          onChange={(e) => setNewPayment({ ...newPayment, payment_method: e.target.value })}
+        >
+          <option value="CASH">CASH</option>
+          <option value="CARD">CARD</option>
+          <option value="BANK_TRANSFER">BANK_TRANSFER</option>
+        </select>
+        <label>Status:</label>
+        <select
+          value={newPayment.status}
+          onChange={(e) => setNewPayment({ ...newPayment, status: e.target.value })}
+        >
+          <option value="PENDING">PENDING</option>
+          <option value="COMPLETED">COMPLETED</option>
+          <option value="REFUNDED">REFUNDED</option>
+        </select>
+        <button
+          onClick={editingPayment ? handleUpdatePayment : handleAddPayment}
+        >
+          {editingPayment ? "Update Payment" : "Add Payment"}
+        </button>
+      </div>
+    </div>
+  );
 };
 
-export default PaymentsAdmin;
+export default PaymentsManagement;
