@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // To handle navigation after logout
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -11,6 +12,14 @@ import Footer from "./footer";
 import './NavBar.css';
 
 function NavScrollExample() {
+  const navigate = useNavigate();
+
+  // Logout function to clear the token and navigate to login page
+  const handleLogout = () => {
+    localStorage.removeItem("token");  // Remove the token from localStorage
+    navigate("/");  // Redirect to login page
+  };
+
   return (
     <div>
       {/* Customized Navbar */}
@@ -29,7 +38,6 @@ function NavScrollExample() {
               <Nav.Link href="/aboutus" className="nav-link-custom">About Us</Nav.Link>
               <Nav.Link href="/testimonials" className="nav-link-custom">Reviews</Nav.Link>
               <Nav.Link href="/contact" className="nav-link-custom">Contact Us</Nav.Link>
-            
             </Nav>
             
             {/* Right-side buttons */}
@@ -40,9 +48,17 @@ function NavScrollExample() {
               <Nav.Link href="/signup" className="me-2">
                 <Button variant="outline-success">Signup</Button> {/* Signup Button */}
               </Nav.Link>
+
+              {/* Logout Button */}
+              <Nav.Link onClick={handleLogout}>
+                <Button variant="outline-primary">Logout</Button> {/* Logout Button */}
+              </Nav.Link>
+
+              {/* Login Button */}
               <Nav.Link href="/login">
                 <Button variant="outline-primary">Login</Button> {/* Login Button */}
               </Nav.Link>
+              
               <Nav.Link href="/adminlogin">
                 <Button variant="outline-primary">Admin</Button> {/* admin Button */}
               </Nav.Link>
@@ -56,7 +72,7 @@ function NavScrollExample() {
       <WhyChooseUs/>
       <Testimonials/>
       <FeaturedVehicles/>
-      < Footer/>
+      <Footer/>
     </div>
   );
 }
