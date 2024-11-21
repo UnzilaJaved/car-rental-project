@@ -30,7 +30,7 @@ function LoginPage() {
 
       if (response.status === 200) {
         console.log("Login successful");
-        const token = response.data.data.token;
+        const token = response.data.token;
         localStorage.setItem("token", token);
         setSuccessMessage("Login successful!");
 

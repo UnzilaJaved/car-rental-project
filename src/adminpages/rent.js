@@ -1,79 +1,88 @@
-import React, { useState, useEffect } from 'react';
-import './rentsadmin.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./rentsadmin.css";
 
-const RentAdmin = () => {
-    const [rents, setRents] = useState(() => {
-        const savedRents = localStorage.getItem('rents');
-        return savedRents ? JSON.parse(savedRents) : [
-            { id: 1, photo: 'golf-6.jpg', brand: 'Golf-6', price: 550, firstname: 'Monir', telephone: '0695051534', rentalDate: '2023-05-26', returnDate: '2023-05-30', total: 2200 },
-            { id: 2, photo: 'toyota.jpg', brand: 'Toyota', price: 600, firstname: 'Monir', telephone: '0695051534', rentalDate: '2023-06-01', returnDate: '2023-06-05', total: 2400 },
-            { id: 3, photo: 'clio.jpg', brand: 'Clio', price: 250, firstname: 'Abdelaziz', telephone: '0695051538', rentalDate: '2023-05-26', returnDate: '2023-05-30', total: 1000 }
-        ];
-    });
+const AdminPanel = () => {
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const token = localStorage.getItem("token");
+   
+  useEffect(() => {
+    fetchPendingRequests();
+  }, []);
 
-    const [searchTerm, setSearchTerm] = useState('');
+  const fetchPendingRequests = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/rent-car");
+      setPendingRequests(response.data);
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage("Failed to fetch pending requests.");
+    }
+  };
 
-    useEffect(() => {
-        localStorage.setItem('rents', JSON.stringify(rents));
-    }, [rents]);
+  const handleAccept = async (id) => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/api/admin/accept-request/${id}`);
+      setSuccessMessage("Rental request approved successfully!");
+      fetchPendingRequests(); // Reload the pending requests after action
+    } catch (error) {
+      setErrorMessage("Failed to approve rental request.");
+    }
+  };
 
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value.toLowerCase());
-    };
+  const handleDecline = async (id) => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/api/admin/decline-request/${id}`);
+      setSuccessMessage("Rental request rejected successfully!");
+      fetchPendingRequests(); // Reload the pending requests after action
+    } catch (error) {
+      setErrorMessage("Failed to reject rental request.");
+    }
+  };
 
-    const filteredRents = rents.filter(rent =>
-        rent.brand.toLowerCase().includes(searchTerm) ||
-        rent.firstname.toLowerCase().includes(searchTerm) ||
-        rent.telephone.includes(searchTerm)
-    );
+  return (
+    <div className="admin-panel">
+      <h2>Pending Rental Requests</h2>
+      {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+      {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
-    return (
-        <div className="rents-page">
-            <div className="search-bar">
-                <input
-                    type="text"
-                    placeholder="Search for rents"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                />
-            </div>
-
-            <table className="rents-table">
-                <thead>
-                    <tr>
-                        <th>Photo</th>
-                        <th>Brand</th>
-                        <th>Price</th>
-                        <th>First Name</th>
-                        <th>Telephone</th>
-                        <th>Rental Date</th>
-                        <th>Return Date</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredRents.length > 0 ? (
-                        filteredRents.map((rent) => (
-                            <tr key={rent.id}>
-                                <td><img src={`/images/${rent.photo}`} alt={rent.brand} width="50" /></td>
-                                <td>{rent.brand}</td>
-                                <td>{rent.price} MAD</td>
-                                <td>{rent.firstname}</td>
-                                <td>{rent.telephone}</td>
-                                <td>{rent.rentalDate}</td>
-                                <td>{rent.returnDate}</td>
-                                <td>{rent.total} MAD</td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="8">No rentals found</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-        </div>
-    );
+      <table className="rental-requests-table">
+        <thead>
+          <tr>
+            <th>Car</th>
+            <th>Customer</th>
+            <th>Rental Dates</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pendingRequests.length > 0 ? (
+            pendingRequests.map((request) => (
+              <tr key={request.id}>
+                <td>{request.vehicle.model}</td>
+                <td>{request.customer.firstname}</td>
+                <td>{request.start_date} to {request.end_date}</td>
+                <td>{request.total_price} MAD</td>
+                <td>{request.status}</td>
+                <td>
+                  <button onClick={() => handleAccept(request.id)}>Approve</button>
+                  <button onClick={() => handleDecline(request.id)}>Reject</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6">No pending requests found.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
-export default RentAdmin;
+export default AdminPanel;

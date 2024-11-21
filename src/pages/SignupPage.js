@@ -13,6 +13,7 @@ const SignupPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Handle form submission
   const handleSignup = async (event) => {
@@ -38,13 +39,17 @@ const SignupPage = () => {
       // Handle successful signup
       if (response.status === 200) {
         console.log("Signup successful");
-        // Redirect user to login or dashboard page
+        setSuccessMessage("Registration successful! A confirmation email has been sent.");
+        setErrorMessage('');  // Clear any previous error message
+        // Optionally, redirect user to login or dashboard page
       } else {
         setErrorMessage(response.data.message);
+        setSuccessMessage('');  // Clear any previous success message
       }
     } catch (error) {
       console.error("Error during signup:", error);
       setErrorMessage("An error occurred. Please try again later.");
+      setSuccessMessage('');  // Clear any previous success message
     }
   };
 
@@ -191,6 +196,12 @@ const SignupPage = () => {
                       {errorMessage && (
                         <div className="alert alert-danger">
                           {errorMessage}
+                        </div>
+                      )}
+
+                      {successMessage && (
+                        <div className="alert alert-success">
+                          {successMessage}
                         </div>
                       )}
 

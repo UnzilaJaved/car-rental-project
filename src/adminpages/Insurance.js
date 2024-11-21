@@ -1,125 +1,209 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Insurance.css';
-import axios from 'axios';
-const InsuranceForm = () => {
-    // State to manage form data
-    const [formData, setFormData] = useState({
-        insuranceID: '',        // Insurance ID (PK)
-        vehicleID: '',          // Vehicle ID (FK)
-        policyNumber: '',       // Policy Number
-        coverageDetails: '',    // Coverage Details
-        expiryDate: '',         // Expiry Date
-    });
 
-    // State to manage submission state
-    const [isSubmitting, setIsSubmitting] = useState(false);
+const InsuranceAdmin = () => {
+  const [insurances, setInsurances] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [newInsurance, setNewInsurance] = useState({
+    veh_id: '',
+    insurance_company: '',
+    policy_number: '',
+    start_date: '',
+    end_date: '',
+    coverage_details: '',
+  });
 
-    // State to manage error messages
-    const [error, setError] = useState('');
-
-    // Handle changes in input fields
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            [name]: value,
-        }));
+  // Fetch insurance records
+  useEffect(() => {
+    const fetchInsurances = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/admin/insurances');
+        const data = await response.json();
+        setInsurances(data);
+      } catch (error) {
+        console.error('Error fetching insurance records:', error);
+      }
     };
+    fetchInsurances();
+  }, []);
 
-    // Handle form submission
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true); // Start submission
-        setError('');          // Reset errors
+  // Add new insurance
+  const handleAddInsurance = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://127.0.0.1:8000/admin/insurances', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newInsurance),
+      });
+      if (response.ok) {
+        const addedInsurance = await response.json();
+        setInsurances([...insurances, addedInsurance]);
+        setNewInsurance({
+          veh_id: '',
+          insurance_company: '',
+          policy_number: '',
+          start_date: '',
+          end_date: '',
+          coverage_details: '',
+        });
+      }
+    } catch (error) {
+      console.error('Error adding insurance:', error);
+    }
+  };
 
-        try {
-            console.log('Insurance Report Submitted:', formData);
+  // Update insurance record
+  const handleUpdateInsurance = async (id, updatedData) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/admin/insurances/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData),
+      });
+      if (response.ok) {
+        const updatedInsurance = await response.json();
+        setInsurances(
+          insurances.map((insurance) =>
+            insurance.id === id ? updatedInsurance : insurance
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error updating insurance record:', error);
+    }
+  };
 
-            //Example: Submit data to a backend API
-            //Uncomment the following block when using a backend API
-            const response = await axios.post('http://localhost:5000/insurance', formData);
-            console.log('Server Response:', response.data);
+  // Delete insurance record
+  const handleDeleteInsurance = async (id) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/admin/insurances/${id}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setInsurances(insurances.filter((insurance) => insurance.id !== id));
+      }
+    } catch (error) {
+      console.error('Error deleting insurance record:', error);
+    }
+  };
 
-            //Reset form data upon successful submission
-            setFormData({
-                insuranceID: '',
-                vehicleID: '',
-                policyNumber: '',
-                coverageDetails: '',
-                expiryDate: '',
-            });
-        } catch (err) {
-            console.error('Submission Error:', err);
-            setError('Failed to submit the insurance report. Please try again.');
-        } finally {
-            setIsSubmitting(false); // End submission
-        }
-    };
-
+  // Filter insurance records based on search term
+  const filteredInsurances = insurances.filter((insurance) => {
     return (
-        <div className="insurance-form">
-            <h2>Insurance Reporting Form</h2>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Insurance ID (PK):
-                    <input
-                        type="text"
-                        name="insuranceID"
-                        value={formData.insuranceID}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-                <label>
-                    Vehicle ID (FK):
-                    <input
-                        type="text"
-                        name="vehicleID"
-                        value={formData.vehicleID}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-                <label>
-                    Policy Number:
-                    <input
-                        type="text"
-                        name="policyNumber"
-                        value={formData.policyNumber}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-                <label>
-                    Coverage Details:
-                    <textarea
-                        name="coverageDetails"
-                        value={formData.coverageDetails}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-                <label>
-                    Expiry Date:
-                    <input
-                        type="date"
-                        name="expiryDate"
-                        value={formData.expiryDate}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-
-                {/* Display error message */}
-                {error && <p className="error-message">{error}</p>}
-
-                {/* Submit button with loading indicator */}
-                <button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? 'Submitting...' : 'Submit Insurance'}
-                </button>
-            </form>
-        </div>
+      insurance.veh_id.toString().includes(searchTerm) ||
+      insurance.policy_number.toLowerCase().includes(searchTerm)
     );
+  });
+
+  return (
+    <div className="insurance-page">
+      <h2>Insurance Management</h2>
+
+      {/* Search Bar */}
+      <input
+        type="text"
+        className="search-bar"
+        placeholder="Search by Vehicle ID or Policy Number..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+      />
+
+      {/* Add Insurance Form */}
+      <form onSubmit={handleAddInsurance} className="add-insurance">
+        <h3>Add Insurance</h3>
+        <input
+          type="number"
+          placeholder="Vehicle ID"
+          value={newInsurance.veh_id}
+          onChange={(e) =>
+            setNewInsurance({ ...newInsurance, veh_id: e.target.value })
+          }
+        />
+        <input
+          type="text"
+          placeholder="Insurance Company"
+          value={newInsurance.insurance_company}
+          onChange={(e) =>
+            setNewInsurance({ ...newInsurance, insurance_company: e.target.value })
+          }
+        />
+        <input
+          type="text"
+          placeholder="Policy Number"
+          value={newInsurance.policy_number}
+          onChange={(e) =>
+            setNewInsurance({ ...newInsurance, policy_number: e.target.value })
+          }
+        />
+        <input
+          type="date"
+          value={newInsurance.start_date}
+          onChange={(e) =>
+            setNewInsurance({ ...newInsurance, start_date: e.target.value })
+          }
+        />
+        <input
+          type="date"
+          value={newInsurance.end_date}
+          onChange={(e) =>
+            setNewInsurance({ ...newInsurance, end_date: e.target.value })
+          }
+        />
+        <textarea
+          placeholder="Coverage Details"
+          value={newInsurance.coverage_details}
+          onChange={(e) =>
+            setNewInsurance({ ...newInsurance, coverage_details: e.target.value })
+          }
+        />
+        <button type="submit">Add Insurance</button>
+      </form>
+
+      {/* Insurance Table */}
+      <table className="insurance-table">
+        <thead>
+          <tr>
+            <th>Vehicle ID</th>
+            <th>Insurance Company</th>
+            <th>Policy Number</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Coverage Details</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredInsurances.map((insurance) => (
+            <tr key={insurance.id}>
+              <td>{insurance.veh_id}</td>
+              <td>{insurance.insurance_company}</td>
+              <td>{insurance.policy_number}</td>
+              <td>{insurance.start_date}</td>
+              <td>{insurance.end_date}</td>
+              <td>{insurance.coverage_details}</td>
+              <td>
+                {/* Update and Delete Buttons */}
+                <button
+                  onClick={() =>
+                    handleUpdateInsurance(insurance.id, {
+                      ...insurance,
+                      status: insurance.status === 'ACTIVE' ? 'EXPIRED' : 'ACTIVE',
+                    })
+                  }
+                >
+                  Toggle Status
+                </button>
+                <button onClick={() => handleDeleteInsurance(insurance.id)}>
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
-export default InsuranceForm;
+export default InsuranceAdmin;
