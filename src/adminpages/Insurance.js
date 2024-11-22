@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Insurance.css';
 
 const InsuranceAdmin = () => {
+  const token = localStorage.getItem("token");
   const [insurances, setInsurances] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [newInsurance, setNewInsurance] = useState({
@@ -35,7 +36,7 @@ const InsuranceAdmin = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newInsurance),
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
       if (response.ok) {
         const addedInsurance = await response.json();
         setInsurances([...insurances, addedInsurance]);
@@ -79,7 +80,7 @@ const InsuranceAdmin = () => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/admin/insurances/${id}`, {
         method: 'DELETE',
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
       if (response.ok) {
         setInsurances(insurances.filter((insurance) => insurance.id !== id));
       }

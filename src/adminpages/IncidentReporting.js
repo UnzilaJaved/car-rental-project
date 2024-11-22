@@ -4,6 +4,7 @@ import "./Incident.css";
 
 const IncidentReporting = () => {
   const [incidents, setIncidents] = useState([]);
+  const token = localStorage.getItem("token");
   const [newIncident, setNewIncident] = useState({
     vehID: "",  // Matching the column 'veh_id'
     incidentDate: "", // Matching the column 'incident_date'
@@ -47,7 +48,7 @@ const IncidentReporting = () => {
         veh_id: newIncident.vehID,
         incident_date: newIncident.incidentDate,
         description: newIncident.description
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
 
       console.log("Server response:", response); // For debugging
       alert("Incident added successfully!");

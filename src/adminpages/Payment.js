@@ -3,6 +3,8 @@ import axios from "axios";
 import "./payment.css";
 
 const PaymentsManagement = () => {
+
+  const token = localStorage.getItem("token");
   const [payments, setPayments] = useState([]);
   const [newPayment, setNewPayment] = useState({
     rental_id: "",
@@ -52,7 +54,7 @@ const PaymentsManagement = () => {
         payment_date: "",
         payment_method: "CASH",
         status: "PENDING",
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
       fetchPayments();
     } catch (error) {
       setErrorMessage("Failed to add payment. Please try again.");
@@ -85,7 +87,7 @@ const PaymentsManagement = () => {
         payment_date: "",
         payment_method: "CASH",
         status: "PENDING",
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
     } catch (error) {
       setErrorMessage("Failed to update payment. Please try again.");
     }

@@ -1,35 +1,36 @@
 import React from "react";
 import './adminhome.css';
 import Nav from 'react-bootstrap/Nav';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
-import axios from 'axios'; // Import axios for making API requests
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Header = ({ onSearch }) => {
-  const navigate = useNavigate(); // Use navigate hook for programmatic navigation
+  const navigate = useNavigate();
 
-  // Function to handle logout
   const handleLogout = async () => {
     try {
-      // Send a request to the backend to log the admin out
-      const response = await axios.get('http://127.0.0.1:8000/api/auth/admin/logout', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // Send the token if needed for backend authentication
+      // API call to log the admin out
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/auth/admin/logout',
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
         }
-      });
+      );
 
       if (response.status === 200) {
-        // Remove the token from localStorage
+        // Clear the token from localStorage
         localStorage.removeItem("token");
 
-        // Optionally, you can also clear sessionStorage
-        // sessionStorage.removeItem("token");
-
-        // Redirect to the login page after logout
-        navigate('/adminhome'); // Navigate to the login page (adjust to your actual login route)
+        // Redirect to the login page
+        navigate('/adminlogin'); // Adjust the route as needed
+      } else {
+        console.error("Unexpected logout response:", response);
       }
     } catch (error) {
       console.error("Error during logout:", error);
-      // Handle error (optional)
     }
   };
 

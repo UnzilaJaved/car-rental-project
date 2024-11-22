@@ -22,13 +22,14 @@ const CarCard = ({ model, price, year, image, onRent, isAvailable }) => (
 
 // Main BookCars Component
 const BookCars = () => {
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const isLoggedIn = localStorage.getItem("token");
-
+  
   // Redirect to login if the user is not logged in
   useEffect(() => {
     if (!isLoggedIn) navigate("/login");
@@ -40,7 +41,7 @@ const BookCars = () => {
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/list", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        },{headers:{Authorization:`Bearer ${token}`}});
 
         // Debugging: Log the response data
         console.log(response.data);

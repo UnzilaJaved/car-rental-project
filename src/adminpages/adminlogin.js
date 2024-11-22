@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import './AdminLogin.css'; 
+import './AdminLogin.css';
 import axios from 'axios';
 
 function AdminLoginPage() {
@@ -9,7 +9,6 @@ function AdminLoginPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  // Check for existing token on component mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -37,7 +36,6 @@ function AdminLoginPage() {
       }
     } catch (error) {
       console.error("Error during login:", error);
-
       if (error.response) {
         setErrorMessage(error.response.data.message || "Error occurred during login.");
       } else {
@@ -75,7 +73,6 @@ function AdminLoginPage() {
                       <div className="form-outline mb-4">
                         <input
                           type="email"
-                          id="form2Example17"
                           className="form-control form-control-lg"
                           placeholder="Email address"
                           value={email}
@@ -87,7 +84,6 @@ function AdminLoginPage() {
                       <div className="form-outline mb-4">
                         <input
                           type="password"
-                          id="form2Example27"
                           className="form-control form-control-lg"
                           placeholder="Password"
                           value={password}

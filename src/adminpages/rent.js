@@ -3,6 +3,7 @@ import axios from "axios";
 import "./rentsadmin.css";
 
 const AdminPanel = () => {
+
   const [pendingRequests, setPendingRequests] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -20,7 +21,7 @@ const AdminPanel = () => {
         headers: {
           Authorization: `Bearer ${token}`, // Add token for authentication
         },
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
 
       // Ensure the response contains data and update the state
       if (response.data && response.data.data) {
@@ -45,7 +46,7 @@ const AdminPanel = () => {
           headers: {
             Authorization: `Bearer ${token}`, // Send token for authentication
           },
-        }
+        },{headers:{Authorization:`Bearer ${token}`}}
       );
       setSuccessMessage("Rental request approved successfully!");
       fetchPendingRequests(); // Reload pending requests after accepting
@@ -65,7 +66,7 @@ const AdminPanel = () => {
           headers: {
             Authorization: `Bearer ${token}`, // Send token for authentication
           },
-        }
+        },{headers:{Authorization:`Bearer ${token}`}}
       );
       setSuccessMessage("Rental request rejected successfully!");
       fetchPendingRequests(); // Reload pending requests after declining

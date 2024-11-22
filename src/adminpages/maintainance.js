@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './maintainance.css';
 
 const MaintenanceAdmin = () => {
+  const token = localStorage.getItem("token");
   const [maintenances, setMaintenances] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [newMaintenance, setNewMaintenance] = useState({
@@ -34,7 +35,7 @@ const MaintenanceAdmin = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMaintenance),
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
       if (response.ok) {
         const addedMaintenance = await response.json();
         setMaintenances([...maintenances, addedMaintenance]);
@@ -58,7 +59,7 @@ const MaintenanceAdmin = () => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
       if (response.ok) {
         const updatedMaintenance = await response.json();
         setMaintenances(
@@ -77,7 +78,7 @@ const MaintenanceAdmin = () => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/admin/maintenance/${id}`, {
         method: 'DELETE',
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
       if (response.ok) {
         setMaintenances(maintenances.filter((maintenance) => maintenance.main_id !== id));
       }

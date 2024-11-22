@@ -3,6 +3,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa';
 import './carsadmin.css';
 
 const CarsAdmin = () => {
+  const token = localStorage.getItem("token");
   const [cars, setCars] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [newCar, setNewCar] = useState({
@@ -59,7 +60,7 @@ const CarsAdmin = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newCar),
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
 
       if (response.ok) {
         const result = await response.json();
@@ -102,7 +103,7 @@ const CarsAdmin = () => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/deleted/${id}`, {
         method: 'DELETE',
-      });
+      },{headers:{Authorization:`Bearer ${token}`}});
 
       if (response.ok) {
         // Filter out the deleted car from the cars list
