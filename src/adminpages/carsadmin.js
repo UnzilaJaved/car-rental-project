@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import './carsadmin.css';
+import axios from 'axios';
 
 const CarsAdmin = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
+
+  // State management
   const [cars, setCars] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [newCar, setNewCar] = useState({
@@ -18,23 +21,48 @@ const CarsAdmin = () => {
   const [editingCarId, setEditingCarId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  // Fetch cars from the backend on component mount
+  // Fetch cars on component mount
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/list')
-      .then((response) => response.json())
-      .then((data) => setCars(data))
-      .catch((error) => console.error('Error fetching cars:', error));
-  }, []);
+    if (token) {
+      fetchCars();
+    } else {
+      setErrorMessage('No token found. Please log in.');
+    }
+  }, [token]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewCar({ ...newCar, [name]: value });
+  // API call to fetch cars
+  const fetchCars = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/list', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCars(response.data);
+    } catch (error) {
+      handleApiError(error);
+    }
   };
 
-  const handleAddCar = () => {
-    setIsFormVisible(true);
-    setEditingCarId(null);
+  // Handle API errors
+  const handleApiError = (error) => {
+    const message = error.response?.data?.message || error.message || 'Something went wrong.';
+    setErrorMessage(message);
+  };
+
+  // Auto-clear success and error messages
+  useEffect(() => {
+    if (successMessage || errorMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage('');
+        setErrorMessage('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, errorMessage]);
+
+  // Reset form fields
+  const resetFormFields = () => {
     setNewCar({
       model: '',
       brand: '',
@@ -46,101 +74,119 @@ const CarsAdmin = () => {
     });
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    const url = editingCarId
-      ? `http://127.0.0.1:8000/api/update-vehicles/${editingCarId}`
-      : 'http://127.0.0.1:8000/api/add-vehicles';
-    const method = editingCarId ? 'PUT' : 'POST';
+  const resetForm = () => {
+    resetFormFields();
+    setIsFormVisible(false);
+    setEditingCarId(null);
+  };
 
+  // Input change handler
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewCar({ ...newCar, [name]: value });
+  };
+
+  // Add a new car
+  const addCar = async () => {
     try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newCar),
-      },{headers:{Authorization:`Bearer ${token}`}});
-
-      if (response.ok) {
-        const result = await response.json();
-
-        if (editingCarId) {
-          // Update car in the frontend
-          setCars(cars.map((car) => (car.id === editingCarId ? result : car)));
-        } else {
-          // Add the new car to the frontend immediately
-          setCars([result, ...cars]);
-          setSuccessMessage('Car added successfully!');
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/add-vehicles',
+        newCar,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
 
-        // Hide the form and reset the fields for the next car addition
-        setIsFormVisible(false);
-        setNewCar({
-          model: '',
-          brand: '',
-          year: '',
-          reg_number: '',
-          status: '',
-          daily_rate: '',
-          mileage: '',
-        });
-        setEditingCarId(null);
-
-        // Clear the success message after 3 seconds
-        setTimeout(() => {
-          setSuccessMessage('');
-        }, 3000);
-      } else {
-        console.error('Failed to save car');
+      if (response.status === 200) {
+        setCars([response.data, ...cars]);
+        setSuccessMessage('Car added successfully!');
+        resetForm();
       }
     } catch (error) {
-      console.error('Error:', error);
+      handleApiError(error);
     }
   };
 
-  const handleDeleteCar = async (id) => {
+  // Update an existing car
+  const updateCar = async (id) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/deleted/${id}`, {
-        method: 'DELETE',
-      },{headers:{Authorization:`Bearer ${token}`}});
+      const response = await axios.put(
+        `http://127.0.0.1:8000/api/vehicles/${id}`,
+        newCar,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (response.ok) {
-        // Filter out the deleted car from the cars list
-        setCars(cars.filter((car) => car.id !== id));
-      } else {
-        console.error('Failed to delete car');
+      if (response.status === 200) {
+        setCars(cars.map((car) => (car.id === id ? response.data : car)));
+        setSuccessMessage('Car updated successfully!');
+        resetForm();
       }
     } catch (error) {
-      console.error('Error deleting car:', error);
+      handleApiError(error);
     }
+  };
+
+  // Delete a car
+  const deleteCar = async (id) => {
+    try {
+      const response = await axios.delete(`http://127.0.0.1:8000/api/deleted/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        setCars(cars.filter((car) => car.id !== id));
+        setSuccessMessage('Car deleted successfully!');
+      }
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
+  // Form submission handler
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    if (editingCarId) {
+      updateCar(editingCarId);
+    } else {
+      addCar();
+    }
+  };
+
+  const handleAddCar = () => {
+    resetFormFields();
+    setIsFormVisible(true);
   };
 
   const handleEditCar = (car) => {
-    setIsFormVisible(true);
-    setEditingCarId(car.id);
     setNewCar(car);
+    setEditingCarId(car.id);
+    setIsFormVisible(true);
   };
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value.toLowerCase());
-  };
+  // Search functionality
+  const handleSearchChange = (e) => setSearchTerm(e.target.value.toLowerCase());
+  const filteredCars = cars.filter((car) =>
+    [car.model, car.brand, car.reg_number]
+      .some((field) => field?.toLowerCase().includes(searchTerm))
+  );
 
-  // Filter cars based on search term and ensure we don't call toLowerCase on undefined values
-  const filteredCars = cars.filter((car) => {
-    const modelMatch = car.model ? car.model.toLowerCase().includes(searchTerm) : false;
-    const brandMatch = car.brand ? car.brand.toLowerCase().includes(searchTerm) : false;
-    const regNumberMatch = car.reg_number ? car.reg_number.toLowerCase().includes(searchTerm) : false;
-
-    return modelMatch || brandMatch || regNumberMatch;
-  });
+  // Render component
+  if (!token) {
+    return <div>Please log in to access the admin panel.</div>;
+  }
 
   return (
     <div className="cars-section">
       <div className="header">
-        <button className="add-car-button" onClick={handleAddCar}>
-          + Add car
-        </button>
+        <button className="add-car-button" onClick={handleAddCar}>+ Add Car</button>
         <input
           type="text"
           placeholder="Search for cars"
@@ -150,67 +196,18 @@ const CarsAdmin = () => {
         />
       </div>
 
-      {/* Success Message */}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
 
       {isFormVisible && (
         <form className="car-form" onSubmit={handleFormSubmit}>
-          <input
-            type="text"
-            name="model"
-            placeholder="Model"
-            value={newCar.model}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="text"
-            name="brand"
-            placeholder="Brand"
-            value={newCar.brand}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="number"
-            name="year"
-            placeholder="Year"
-            value={newCar.year}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="text"
-            name="reg_number"
-            placeholder="Registration Number"
-            value={newCar.reg_number}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="text"
-            name="status"
-            placeholder="Status"
-            value={newCar.status}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="number"
-            name="daily_rate"
-            placeholder="Daily Rate"
-            value={newCar.daily_rate}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="number"
-            name="mileage"
-            placeholder="Mileage"
-            value={newCar.mileage}
-            onChange={handleInputChange}
-            required
-          />
+          <input type="text" name="model" placeholder="Model" value={newCar.model} onChange={handleInputChange} required />
+          <input type="text" name="brand" placeholder="Brand" value={newCar.brand} onChange={handleInputChange} required />
+          <input type="number" name="year" placeholder="Year" value={newCar.year} onChange={handleInputChange} required />
+          <input type="text" name="reg_number" placeholder="Registration Number" value={newCar.reg_number} onChange={handleInputChange} required />
+          <input type="text" name="status" placeholder="Status" value={newCar.status} onChange={handleInputChange} required />
+          <input type="number" name="daily_rate" placeholder="Daily Rate" value={newCar.daily_rate} onChange={handleInputChange} required />
+          <input type="number" name="mileage" placeholder="Mileage" value={newCar.mileage} onChange={handleInputChange} required />
           <button type="submit">{editingCarId ? 'Update Car' : 'Add Car'}</button>
         </form>
       )}
@@ -241,13 +238,10 @@ const CarsAdmin = () => {
               <td>{car.daily_rate}</td>
               <td>{car.mileage}</td>
               <td>
-                <button className="edit-button" onClick={() => handleEditCar(car)}>
+                <button className="edit-button" title="Edit Car" onClick={() => handleEditCar(car)}>
                   <FaEdit />
                 </button>
-                <button
-                  className="delete-button"
-                  onClick={() => handleDeleteCar(car.id)}
-                >
+                <button className="delete-button" title="Delete Car" onClick={() => deleteCar(car.id)}>
                   <FaTrash />
                 </button>
               </td>
