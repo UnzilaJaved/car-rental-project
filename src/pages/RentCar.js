@@ -6,7 +6,7 @@ import "./RentalCar.css";
 const RentalCar = () => {
   const location = useLocation();
   const { car } = location.state || {}; // Car information passed from the previous page
-  const token = localStorage.getItem("token");
+ 
     
   // Local state variables
   const [rentalDate, setRentalDate] = useState("");
@@ -19,6 +19,7 @@ const RentalCar = () => {
 
   // UseEffect to calculate total price based on dates
   useEffect(() => {
+    
     if (rentalDate && returnDate) {
       const rental = new Date(rentalDate);
       const returning = new Date(returnDate);
@@ -45,6 +46,8 @@ const RentalCar = () => {
 
     setIsSubmitting(true);
     try {
+      const token = localStorage.getItem("token");
+      if(token){
       // Send the rental request to the backend
       const response = await axios.post("http://127.0.0.1:8000/api/rent-car", {
         veh_id: car.id,           // Car ID (veh_id in the database)         // Customer ID (we'll assume it's 1 here; in real implementation, use the logged-in user's ID)
@@ -52,13 +55,14 @@ const RentalCar = () => {
         end_date: returnDate,     // Rental end date (end_date in the database)
         total_price: totalPrice,  // Total price (total_price in the database)
       },{headers:{Authorization:`Bearer ${token}`}});
-
+    
       if (response.status === 200) {
         setSuccessMessage("Car rental request submitted successfully!");
         setErrorMessage("");
       } else {
         setErrorMessage(response.data.message || "Failed to rent the car. Please try again.");
       }
+    }
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || "An error occurred while submitting your request."
@@ -66,8 +70,9 @@ const RentalCar = () => {
     } finally {
       setIsSubmitting(false); // Reset submitting state
     }
+  
   };
-
+  
   // If no car is passed through location state, show an error message
   if (!car) return <div>No car information found. Please go back and select a car.</div>;
 
