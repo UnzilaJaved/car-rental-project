@@ -3,82 +3,97 @@ import axios from "axios";
 import "./rentsadmin.css";
 
 const AdminPanel = () => {
-
   const [pendingRequests, setPendingRequests] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const token = localStorage.getItem("token"); // Fetch token from localStorage
+  const token = localStorage.getItem("token");
 
-  // Fetch pending requests on component mount
   useEffect(() => {
     fetchPendingRequests();
   }, []);
 
-  // Function to fetch pending rental requests
+  // Fetch pending rental requests
   const fetchPendingRequests = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/admin/pending-requests", {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add token for authentication
-        },
-      },{headers:{Authorization:`Bearer ${token}`}});
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/admin/rentals/pending",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      // Ensure the response contains data and update the state
-      if (response.data && response.data.data) {
-        setPendingRequests(response.data.data); // Adjust if the API structure is different
+      if (response.data && Array.isArray(response.data)) {
+        const requests = response.data;
+
+        // Fetch additional details for each request
+        const enrichedRequests = await Promise.all(
+          requests.map(async (request) => {
+            const [vehicleResponse, customerResponse] = await Promise.all([
+              axios.get(
+                `http://127.0.0.1:8000/api/admin/vehicles/${request.veh_id}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+              ),
+              axios.get(
+                `http://127.0.0.1:8000/api/admin/customers/${request.cus_id}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+              ),
+            ]);
+
+            return {
+              ...request,
+              vehicle: vehicleResponse.data,
+              customer: customerResponse.data,
+            };
+          })
+        );
+
+        setPendingRequests(enrichedRequests);
       } else {
-        setErrorMessage("No data found or invalid response format.");
+        setPendingRequests([]);
+        setErrorMessage("No pending requests found.");
       }
-      setErrorMessage("");
     } catch (error) {
       console.error("Error fetching pending requests:", error);
-      setErrorMessage("Failed to fetch pending requests.");
+      setErrorMessage("Failed to load pending requests. Please try again.");
     }
   };
 
-  // Handle accepting a rental request
+  // Approve rental request
   const handleAccept = async (id) => {
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/accept-request/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Send token for authentication
-          },
-        },{headers:{Authorization:`Bearer ${token}`}}
+      await axios.put(
+        `http://127.0.0.1:8000/api/admin/rentals/accept/${id}`,
+        {}, // Empty body
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setSuccessMessage("Rental request approved successfully!");
-      fetchPendingRequests(); // Reload pending requests after accepting
+      setSuccessMessage(`Rental request #${id} approved successfully!`);
+      setErrorMessage("");
+      fetchPendingRequests();
     } catch (error) {
       console.error("Error approving rental request:", error);
-      setErrorMessage("Failed to approve rental request.");
+      setErrorMessage("Failed to approve rental request. Please try again.");
     }
   };
 
-  // Handle declining a rental request
+  // Reject rental request
   const handleDecline = async (id) => {
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/decline-request/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Send token for authentication
-          },
-        },{headers:{Authorization:`Bearer ${token}`}}
+      await axios.put(
+        `http://127.0.0.1:8000/api/admin/rentals/decline/${id}`,
+        {}, // Empty body
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setSuccessMessage("Rental request rejected successfully!");
-      fetchPendingRequests(); // Reload pending requests after declining
+      setSuccessMessage(`Rental request #${id} rejected successfully!`);
+      setErrorMessage("");
+      fetchPendingRequests();
     } catch (error) {
       console.error("Error rejecting rental request:", error);
-      setErrorMessage("Failed to reject rental request.");
+      setErrorMessage("Failed to reject rental request. Please try again.");
     }
   };
 
   return (
     <div className="admin-panel">
       <h2>Pending Rental Requests</h2>
+
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
@@ -89,28 +104,47 @@ const AdminPanel = () => {
             <th>Customer</th>
             <th>Rental Dates</th>
             <th>Total Price</th>
-            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {pendingRequests.length > 0 ? (
             pendingRequests.map((request) => (
-              <tr key={request.id}>
-                <td>{request.vehicle.model}</td>
-                <td>{request.customer.firstname} {request.customer.lastname}</td>
-                <td>{request.start_date} to {request.end_date}</td>
-                <td>{request.total_price} MAD</td>
-                <td>{request.status}</td>
+              <tr key={request.rental_id}>
+                {/* Vehicle Details */}
                 <td>
-                  <button onClick={() => handleAccept(request.id)}>Approve</button>
-                  <button onClick={() => handleDecline(request.id)}>Reject</button>
+                  {request.vehicle?.brand} {request.vehicle?.model || "N/A"}
+                </td>
+                {/* Customer Details */}
+                <td>
+                  {request.customer?.first_name} {request.customer?.last_name}
+                </td>
+                {/* Rental Dates */}
+                <td>
+                  {request.start_date} to {request.end_date}
+                </td>
+                {/* Total Price */}
+                <td>{request.total_price} MAD</td>
+                {/* Action Buttons */}
+                <td>
+                  <button
+                    onClick={() => handleAccept(request.rental_id)}
+                    className="btn btn-approve"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleDecline(request.rental_id)}
+                    className="btn btn-reject"
+                  >
+                    Reject
+                  </button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="6">No pending requests found.</td>
+              <td colSpan="5">No pending requests found.</td>
             </tr>
           )}
         </tbody>
