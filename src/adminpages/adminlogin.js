@@ -9,12 +9,13 @@ function AdminLoginPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate('/adminhome'); // Redirect to Admin Dashboard if token exists
-    }
-  }, [navigate]);
+  //useEffect(() => {
+    // const token = localStorage.getItem("token");
+    // if (token) {
+    //  navigate('/adminhome'); // Redirect to Admin Dashboard if token exists
+    //}
+  //}
+  //, [navigate]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -28,7 +29,8 @@ function AdminLoginPage() {
 
       if (response.status === 200) {
         console.log("Admin login successful");
-        const token = response.data.token; // Assuming token is returned
+        const token = response.data.data.token; // Assuming token is returned
+        console.log(token);
         localStorage.setItem("token", token); // Store the token in localStorage
         navigate('/adminhome'); // Redirect to Admin Dashboard
       } else {
