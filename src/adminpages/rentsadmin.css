@@ -1,113 +1,102 @@
-.rents-page {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
+/* rentsadmin.css */
+
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+.admin-panel {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
-.search-bar {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 250px;
+h2 {
+  text-align: center;
+  color: #333333;
+  margin-bottom: 20px;
 }
 
-.rents-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #ffffff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Alerts */
+.alert {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-.rents-table th, .rents-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #f0f0f0;
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
 }
 
-.rents-table th {
-    background-color: #f7f7f7;
-    font-weight: 600;
+.alert-success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
 }
 
-.rents-table td img {
-    width: 50px;
-    height: 30px;
-    object-fit: cover;
-    border-radius: 4px;
+/* Table Styles */
+.rental-requests-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-.delete-button, .edit-button {
-    background: none;
-    border: none;
-    cursor: pointer;
+.rental-requests-table th,
+.rental-requests-table td {
+  border: 1px solid #dddddd;
+  padding: 10px;
+  text-align: left;
 }
 
-.edit-button svg, .delete-button svg {
-    color: #007bff;
-    font-size: 1.1em;
+.rental-requests-table th {
+  background-color: #e8f5e9; /* Light green background */
+  color: #2e7d32; /* Dark green text */
+  font-weight: bold;
 }
 
-.delete-button svg {
-    color: #dc3545;
+.rental-requests-table tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
-/* Overlay background for modal */
-.delete-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+.rental-requests-table tr:hover {
+  background-color: #f1f1f1;
 }
 
-/* Modal content styling */
-.modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    max-width: 300px;
-    width: 100%;
+/* Button Styles */
+.btn {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* Confirmation buttons */
-.confirm-button, .cancel-button {
-    padding: 10px 20px;
-    margin: 10px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
+/* Approve Button */
+.btn-approve {
+  background-color: #4caf50; /* Green */
+  color: #ffffff;
 }
 
-.confirm-button {
-    background-color: #dc3545; /* Red color for delete confirmation */
-    color: white;
+.btn-approve:hover {
+  background-color: #45a049; /* Slightly darker green */
 }
 
-.confirm-button:hover {
-    background-color: #c82333;
+/* Reject Button */
+.btn-reject {
+  background-color: #f44336; /* Red */
+  color: #ffffff;
 }
 
-.cancel-button {
-    background-color: #6c757d; /* Gray color for cancel */
-    color: white;
-}
-
-.cancel-button:hover {
-    background-color: #5a6268;
+.btn-reject:hover {
+  background-color: #d32f2f; /* Slightly darker red */
 }
