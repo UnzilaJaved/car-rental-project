@@ -10,15 +10,9 @@ function LoginPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  
   // Check for existing token on component mount
-  useEffect(() => {
-    
-    if (token) {
-      navigate('/bookcars'); // Redirect to BookCars if token exists
-    }
-  }, [navigate]);
-
+  
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -26,11 +20,12 @@ function LoginPage() {
       const response = await axios.post('http://127.0.0.1:8000/api/auth/customer/login', {
         email,
         password,
-      },{headers:{Authorization:`Bearer ${token}`}});
+      });
 
       if (response.status === 200) {
         console.log("Login successful");
-        const token = response.data.token;
+        const token = response.data.data.token;
+        console.log(token);
         localStorage.setItem("token", token);
         setSuccessMessage("Login successful!");
 
