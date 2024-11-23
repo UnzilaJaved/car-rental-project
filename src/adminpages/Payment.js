@@ -28,7 +28,11 @@ const PaymentsManagement = () => {
   const fetchPayments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(API_URL);
+      const response = await axios.get(API_URL, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Add Bearer token to the request headers
+        },
+      });
       setPayments(response.data);
       setErrorMessage("");
     } catch (error) {
@@ -46,7 +50,11 @@ const PaymentsManagement = () => {
     }
 
     try {
-      await axios.post(API_URL, newPayment);
+      await axios.post(API_URL, newPayment, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Add Bearer token to the request headers
+        },
+      });
       alert("Payment added successfully!");
       setNewPayment({
         rental_id: "",
@@ -54,7 +62,7 @@ const PaymentsManagement = () => {
         payment_date: "",
         payment_method: "CASH",
         status: "PENDING",
-      },{headers:{Authorization:`Bearer ${token}`}});
+      });
       fetchPayments();
     } catch (error) {
       setErrorMessage("Failed to add payment. Please try again.");
@@ -77,7 +85,11 @@ const PaymentsManagement = () => {
     };
 
     try {
-      await axios.put(`${API_URL}/${editingPayment.payment_id}`, updatedPayment);
+      await axios.put(`${API_URL}/${editingPayment.payment_id}`, updatedPayment, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Add Bearer token to the request headers
+        },
+      });
       alert("Payment updated successfully!");
       fetchPayments();
       setEditingPayment(null); // Reset editing mode after update
@@ -87,7 +99,7 @@ const PaymentsManagement = () => {
         payment_date: "",
         payment_method: "CASH",
         status: "PENDING",
-      },{headers:{Authorization:`Bearer ${token}`}});
+      });
     } catch (error) {
       setErrorMessage("Failed to update payment. Please try again.");
     }
@@ -96,7 +108,11 @@ const PaymentsManagement = () => {
   // Function to delete a payment
   const handleDeletePayment = async (paymentId) => {
     try {
-      await axios.delete(`${API_URL}/${paymentId}`);
+      await axios.delete(`${API_URL}/${paymentId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Add Bearer token to the request headers
+        },
+      });
       alert("Payment deleted successfully!");
       fetchPayments();
     } catch (error) {
