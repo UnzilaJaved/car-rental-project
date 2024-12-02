@@ -6,21 +6,29 @@ import "./RentalCar.css";
 const RentalCar = () => {
   const location = useLocation();
   const { car } = location.state || {}; // Car information passed from the previous page
- 
-    
+  
+  // Debugging: Log car object
+  console.log("Car Object:", car);
+
   // Local state variables
   const [rentalDate, setRentalDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [totalDays, setTotalDays] = useState(1); // Default to 1 day
-  const [totalPrice, setTotalPrice] = useState(car?.daily_rate || 0); // Use the car's daily rate
+  const [totalPrice, setTotalPrice] = useState(0); // Initial total price is 0
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Ensure car is available before using it in the useEffect
+  useEffect(() => {
+    if (car && car.daily_rate) {
+      setTotalPrice(car.daily_rate);
+    }
+  }, [car]);
+
   // UseEffect to calculate total price based on dates
   useEffect(() => {
-    
-    if (rentalDate && returnDate) {
+    if (rentalDate && returnDate && car) {
       const rental = new Date(rentalDate);
       const returning = new Date(returnDate);
 
@@ -47,22 +55,22 @@ const RentalCar = () => {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem("token");
-      if(token){
-      // Send the rental request to the backend
-      const response = await axios.post("http://127.0.0.1:8000/api/rent-car", {
-        veh_id: car.id,           // Car ID (veh_id in the database)         // Customer ID (we'll assume it's 1 here; in real implementation, use the logged-in user's ID)
-        start_date: rentalDate,   // Rental start date (start_date in the database)
-        end_date: returnDate,     // Rental end date (end_date in the database)
-        total_price: totalPrice,  // Total price (total_price in the database)
-      },{headers:{Authorization:`Bearer ${token}`}});
-    
-      if (response.status === 200) {
-        setSuccessMessage("Car rental request submitted successfully!");
-        setErrorMessage("");
-      } else {
-        setErrorMessage(response.data.message || "Failed to rent the car. Please try again.");
+      if (token) {
+        // Send the rental request to the backend
+        const response = await axios.post("http://127.0.0.1:8000/api/rent-car", {
+          veh_id: car.id,           // Car ID (veh_id in the database)
+          start_date: rentalDate,   // Rental start date (start_date in the database)
+          end_date: returnDate,     // Rental end date (end_date in the database)
+          total_price: totalPrice,  // Total price (total_price in the database)
+        }, { headers: { Authorization: `Bearer ${token}` } });
+
+        if (response.status === 200) {
+          setSuccessMessage("Car rental request submitted successfully!");
+          setErrorMessage("");
+        } else {
+          setErrorMessage(response.data.message || "Failed to rent the car. Please try again.");
+        }
       }
-    }
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || "An error occurred while submitting your request."
@@ -70,16 +78,20 @@ const RentalCar = () => {
     } finally {
       setIsSubmitting(false); // Reset submitting state
     }
-  
   };
-  
+
   // If no car is passed through location state, show an error message
   if (!car) return <div>No car information found. Please go back and select a car.</div>;
 
   return (
     <div className="rental-car-page">
       <div className="car-image-section">
-        <img src={car.image || "/default-placeholder.png"} alt={car.model} className="car-large-image" />
+        {/* Ensure car.image is valid, fallback if not */}
+        <img
+          src={car.filePath ? `http://127.0.0.1:8000/storage/${car.filePath}` : "/default-placeholder.png"}
+          alt={car.model}
+          className="car-large-image"
+        />
       </div>
       <div className="car-details-section">
         <h2>{car.model}</h2>
