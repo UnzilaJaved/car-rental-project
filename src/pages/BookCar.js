@@ -6,7 +6,12 @@ import "./BookCar.css";
 // CarCard Component
 const CarCard = ({ model, price, year, image, onRent, isAvailable }) => (
   <div className="car-card">
-    <img src={image || "/default-placeholder.png"} alt={model} className="car-image" />
+    <img 
+  src={image ? `http://127.0.0.1:8000/storage/${image}` : "/default-placeholder.png"} 
+  alt={model} 
+  className="car-image" 
+/>
+
     <h3>{model}</h3>
     <p>Year: {year}</p>
     <p>Price: {price} PKR/day</p>
@@ -28,8 +33,8 @@ const BookCars = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const isLoggedIn = localStorage.getItem("token");
-  
+  const isLoggedIn = !!token;
+
   // Redirect to login if the user is not logged in
   useEffect(() => {
     if (!isLoggedIn) navigate("/login");
@@ -40,11 +45,8 @@ const BookCars = () => {
     const fetchCars = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/list", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        },{headers:{Authorization:`Bearer ${token}`}});
-
-        // Debugging: Log the response data
-        console.log(response.data);
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         setCars(response.data);
       } catch (error) {
@@ -56,7 +58,7 @@ const BookCars = () => {
     };
 
     if (isLoggedIn) fetchCars();
-  }, [isLoggedIn]);
+  }, [isLoggedIn, token]);
 
   // Handle renting a car
   const handleRentClick = (car) => {
@@ -79,7 +81,7 @@ const BookCars = () => {
             model={car.model}
             year={car.year}
             price={car.daily_rate} // Adjusted based on your database schema
-            image={car.image}
+            image={car.filePath} // Updated to display stored image
             onRent={() => handleRentClick(car)}
             isAvailable={car.status === 1} // Map `status` field to `isAvailable`
           />
