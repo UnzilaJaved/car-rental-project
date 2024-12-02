@@ -7,41 +7,23 @@ import axios from 'axios';
 const Header = ({ onSearch }) => {
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      // API call to log the admin out
-      const response = await axios.post(
-        'http://127.0.0.1:8000/api/auth/admin/logout',
-        {},
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        // Clear the token from localStorage
-        localStorage.removeItem("token");
-
-        // Redirect to the login page
-        navigate('/adminlogin'); // Adjust the route as needed
-      } else {
-        console.error("Unexpected logout response:", response);
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("token");  // Remove the token from localStorage
+    navigate("/");  // Redirect to login page
   };
+;
 
   return (
     <div className="header">
+      {/* Search input */}
       <input
         type="text"
         placeholder="Search for users"
         className="search-input"
-        onChange={onSearch}
+        onChange={(e) => onSearch(e)} // Ensure that onSearch is called correctly
       />
+
+      {/* Logout button */}
       <Nav.Link href="#" className="me-2" onClick={handleLogout}>
         <button className="logout-button">Logout</button>
       </Nav.Link>
