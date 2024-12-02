@@ -17,6 +17,7 @@ const CarsAdmin = () => {
     status: '',
     daily_rate: '',
     mileage: '',
+    file: null, // Added for image upload
   });
   const [editingCarId, setEditingCarId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,7 +33,6 @@ const CarsAdmin = () => {
     }
   }, [token]);
 
-  // API call to fetch cars
   const fetchCars = async () => {
     try {
       const response = await axios.get('http://127.0.0.1:8000/api/list', {
@@ -44,13 +44,11 @@ const CarsAdmin = () => {
     }
   };
 
-  // Handle API errors
   const handleApiError = (error) => {
     const message = error.response?.data?.message || error.message || 'Something went wrong.';
     setErrorMessage(message);
   };
 
-  // Auto-clear success and error messages
   useEffect(() => {
     if (successMessage || errorMessage) {
       const timer = setTimeout(() => {
@@ -61,7 +59,6 @@ const CarsAdmin = () => {
     }
   }, [successMessage, errorMessage]);
 
-  // Reset form fields
   const resetFormFields = () => {
     setNewCar({
       model: '',
@@ -71,6 +68,7 @@ const CarsAdmin = () => {
       status: '',
       daily_rate: '',
       mileage: '',
+      file: null,
     });
   };
 
@@ -80,21 +78,28 @@ const CarsAdmin = () => {
     setEditingCarId(null);
   };
 
-  // Input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewCar({ ...newCar, [name]: value });
   };
 
-  // Add a new car
+  const handleFileChange = (e) => {
+    setNewCar({ ...newCar, file: e.target.files[0] });
+  };
+
   const addCar = async () => {
     try {
+      const formData = new FormData();
+      Object.keys(newCar).forEach((key) => {
+        formData.append(key, newCar[key]);
+      });
+
       const response = await axios.post(
         'http://127.0.0.1:8000/api/add-vehicles',
-        newCar,
+        formData,
         {
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -110,15 +115,19 @@ const CarsAdmin = () => {
     }
   };
 
-  // Update an existing car
   const updateCar = async (id) => {
     try {
-      const response = await axios.put(
+      const formData = new FormData();
+      Object.keys(newCar).forEach((key) => {
+        formData.append(key, newCar[key]);
+      });
+
+      const response = await axios.post(
         `http://127.0.0.1:8000/api/vehicles/${id}`,
-        newCar,
+        formData,
         {
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -134,7 +143,6 @@ const CarsAdmin = () => {
     }
   };
 
-  // Delete a car
   const deleteCar = async (id) => {
     try {
       const response = await axios.delete(`http://127.0.0.1:8000/api/deleted/${id}`, {
@@ -150,7 +158,6 @@ const CarsAdmin = () => {
     }
   };
 
-  // Form submission handler
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (editingCarId) {
@@ -166,19 +173,17 @@ const CarsAdmin = () => {
   };
 
   const handleEditCar = (car) => {
-    setNewCar(car);
+    setNewCar({ ...car, file: null });
     setEditingCarId(car.id);
     setIsFormVisible(true);
   };
 
-  // Search functionality
   const handleSearchChange = (e) => setSearchTerm(e.target.value.toLowerCase());
   const filteredCars = cars.filter((car) =>
     [car.model, car.brand, car.reg_number]
       .some((field) => field?.toLowerCase().includes(searchTerm))
   );
 
-  // Render component
   if (!token) {
     return <div>Please log in to access the admin panel.</div>;
   }
@@ -208,6 +213,7 @@ const CarsAdmin = () => {
           <input type="text" name="status" placeholder="Status" value={newCar.status} onChange={handleInputChange} required />
           <input type="number" name="daily_rate" placeholder="Daily Rate" value={newCar.daily_rate} onChange={handleInputChange} required />
           <input type="number" name="mileage" placeholder="Mileage" value={newCar.mileage} onChange={handleInputChange} required />
+          <input type="file" onChange={handleFileChange} accept="image/*" />
           <button type="submit">{editingCarId ? 'Update Car' : 'Add Car'}</button>
         </form>
       )}
@@ -223,6 +229,7 @@ const CarsAdmin = () => {
             <th>Status</th>
             <th>Daily Rate</th>
             <th>Mileage</th>
+            <th>Image</th>
             <th>Operations</th>
           </tr>
         </thead>
@@ -237,6 +244,13 @@ const CarsAdmin = () => {
               <td>{car.status}</td>
               <td>{car.daily_rate}</td>
               <td>{car.mileage}</td>
+              <td>
+                <img 
+                  src={`http://127.0.0.1:8000/storage/${car.filePath}`} 
+                  alt={car.model} 
+                  className="car-image-thumbnail" 
+                />
+              </td>
               <td>
                 <button className="edit-button" title="Edit Car" onClick={() => handleEditCar(car)}>
                   <FaEdit />
