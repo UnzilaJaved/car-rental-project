@@ -17,7 +17,7 @@ const CarsAdmin = () => {
     status: '',
     daily_rate: '',
     mileage: '',
-    file: null, // Added for image upload
+    filePath: null, // Added for image upload
   });
   const [editingCarId, setEditingCarId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -68,7 +68,7 @@ const CarsAdmin = () => {
       status: '',
       daily_rate: '',
       mileage: '',
-      file: null,
+      filePath: ''
     });
   };
 
@@ -84,7 +84,7 @@ const CarsAdmin = () => {
   };
 
   const handleFileChange = (e) => {
-    setNewCar({ ...newCar, file: e.target.files[0] });
+    setNewCar({ ...newCar, filePath: e.target.files[0] });
   };
 
   const addCar = async () => {
@@ -123,7 +123,7 @@ const CarsAdmin = () => {
       });
 
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/vehicles/${id}`,
+        `http://127.0.0.1:8000/api/vehicles/${id}`, 
         formData,
         {
           headers: {
@@ -132,6 +132,7 @@ const CarsAdmin = () => {
           },
         }
       );
+      
 
       if (response.status === 200) {
         setCars(cars.map((car) => (car.id === id ? response.data : car)));
@@ -173,7 +174,7 @@ const CarsAdmin = () => {
   };
 
   const handleEditCar = (car) => {
-    setNewCar({ ...car, file: null });
+    setNewCar({ ...car, filePath: null });
     setEditingCarId(car.id);
     setIsFormVisible(true);
   };
