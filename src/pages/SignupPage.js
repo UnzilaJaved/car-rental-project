@@ -7,52 +7,51 @@ const SignupPage = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [country, setCountry] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   // Handle form submission
   const handleSignup = async (event) => {
     event.preventDefault();
-
+  
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match!");
       return;
     }
-
+  
     try {
+      // Send all data in one request
       const response = await axios.post('http://127.0.0.1:8000/api/auth/customer/register', {
         first_name: firstName,
         last_name: lastName,
         email,
         phone_number: phone,
-        address,
-        city,
-        country,
         password,
+        address,   // Add address
+        city,      // Add city
+        country,   // Add country
       });
-
-      // Handle successful signup
+  
+      // Check if registration was successful
       if (response.status === 200) {
-        console.log("Signup successful");
         setSuccessMessage("Registration successful! A confirmation email has been sent.");
-        setErrorMessage('');  // Clear any previous error message
-        // Optionally, redirect user to login or dashboard page
+        setErrorMessage('');
       } else {
         setErrorMessage(response.data.message);
-        setSuccessMessage('');  // Clear any previous success message
+        setSuccessMessage('');
       }
     } catch (error) {
       console.error("Error during signup:", error);
       setErrorMessage("An error occurred. Please try again later.");
-      setSuccessMessage('');  // Clear any previous success message
+      setSuccessMessage('');
     }
   };
-
+  
   return (
     <section className="vh-100 signup-background">
       <div className="container h-100">
@@ -123,6 +122,7 @@ const SignupPage = () => {
                         </div>
                       </div>
 
+                      {/* Added Address, City, and Country */}
                       <div className="input-group mb-4">
                         <i className="fas fa-home fa-lg me-3 fa-fw input-icon"></i>
                         <div className="form-outline flex-fill mb-0">
@@ -152,7 +152,7 @@ const SignupPage = () => {
                       </div>
 
                       <div className="input-group mb-4">
-                        <i className="fas fa-globe fa-lg me-3 fa-fw input-icon"></i>
+                        <i className="fas fa-flag fa-lg me-3 fa-fw input-icon"></i>
                         <div className="form-outline flex-fill mb-0">
                           <input
                             type="text"
