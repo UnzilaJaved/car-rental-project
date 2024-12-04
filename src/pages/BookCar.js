@@ -7,11 +7,10 @@ import "./BookCar.css";
 const CarCard = ({ model, price, year, image, onRent, isAvailable }) => (
   <div className="car-card">
     <img 
-  src={image ? `http://127.0.0.1:8000/storage/${image}` : "/default-placeholder.png"} 
-  alt={model} 
-  className="car-image" 
-/>
-
+      src={image ? image : "/default-placeholder.png"} 
+      alt={model} 
+      className="car-image" 
+    />
     <h3>{model}</h3>
     <p>Year: {year}</p>
     <p>Price: {price} PKR/day</p>
@@ -80,10 +79,10 @@ const BookCars = () => {
             key={car.id}
             model={car.model}
             year={car.year}
-            price={car.daily_rate} // Adjusted based on your database schema
-            image={car.filePath} // Updated to display stored image
+            price={car.daily_rate} 
+            image={car.image_url} 
             onRent={() => handleRentClick(car)}
-            isAvailable={car.status === 1} // Map `status` field to `isAvailable`
+            isAvailable={car.status == 1}
           />
         ))}
       </div>
